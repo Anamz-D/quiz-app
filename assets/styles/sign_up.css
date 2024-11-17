@@ -70,6 +70,10 @@ input::placeholder{
 .form-footer-btn:hover {
     background-color: #2952cc;
 }
+button[type=submit]:disabled{
+    background-color: black;
+    cursor: not-allowed;
+}
 .form-footer {
     justify-content: center;
     text-align: center;
@@ -90,6 +94,9 @@ hr{
     margin: 15px;
 }
 
+.alert{
+    display: none;
+}
 /* 
 h1 {
     text-align: center;

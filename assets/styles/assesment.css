@@ -6,6 +6,15 @@
     display: flex;
     flex-direction: column;
 } 
+#loading-wrapper{
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    /* background-color: white; */
+    z-index: 3;
+    backdrop-filter: blur(20px);
+
+}
 main {
     margin-top: 40px;
 }
@@ -28,7 +37,7 @@ h1, h2 {
 }
 .assessments {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
 }
 .assessment-card {

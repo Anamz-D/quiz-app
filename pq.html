@@ -1,280 +1,14 @@
-<!-- <!DOCTYPE html>
+ 
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="pq.css">
-    <style>
-        body, html {
-            
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(to bottom right, #1e3a8a, #1e40af);
-            color: white;
-        }
-        .container {
-            min-height: 100vh;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-        }
-        h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        .subject-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        .subject-nav button {
-            background-color: #3b82f6;
-            border: none;
-            color: white;
-            padding: 0.5rem;
-            border-radius: 9999px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .subject-nav button:hover {
-            background-color: #2563eb;
-        }
-        .subject-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        .search-container {
-            position: relative;
-            margin-bottom: 2rem;
-        }
-        .search-input {
-            width: 100%;
-            background-color: rgba(30, 64, 175, 0.5);
-            border: 1px solid #2563eb;
-            border-radius: 9999px;
-            padding: 0.75rem 1.5rem;
-            padding-right: 3rem;
-            color: white;
-            font-size: 1rem;
-        }
-        .search-input::placeholder {
-            color: #93c5fd;
-        }
-        .search-input:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px #3b82f6;
-        }
-        .search-icon {
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #93c5fd;
-        }
-        .questions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .question-card {
-            background-color: rgba(30, 64, 175, 0.5);
-            border: 1px solid #2563eb;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            transition: background-color 0.3s;
-        }
-        .question-card:hover {
-            background-color: rgba(30, 64, 175, 0.75);
-        }
-        .question-subject {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        .question-text {
-            margin-bottom: 1rem;
-        }
-        .view-button {
-            background-color: #3b82f6;
-            border: none;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            transition: background-color 0.3s;
-        }
-        .view-button:hover {
-            background-color: #2563eb;
-        }
-        .view-button svg {
-            margin-right: 0.5rem;
-        }
-        .subject-filters {
-            margin-top: auto;
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
-        .subject-filter {
-            background-color: rgba(30, 64, 175, 0.5);
-            border: none;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .subject-filter:hover, .subject-filter.active {
-            background-color: #3b82f6;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <nav>
-            <h1>ENCORE-EDUCATION</h1>
-            <div class="nav-bar">
-             <a href="home.html">Home</a>
-             <a href="assesment.html">Assessments</a>
-             <a href="sign_up.html">Sign up</a>
-             <a href="log_in.html">Login</a>
-            </div>
-            <button class="menu-toggle">Menu</button>
-        </nav>
-    </header>
-    <div class="container">
-        <h1>Past Questions Explorer</h1>
-        
-        <div class="subject-nav">
-            <button id="prevSubject">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </button>
-            <h2 class="subject-title" id="currentSubject">Mathematics</h2>
-            <button id="nextSubject">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
-        </div>
-
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search questions..." class="search-input">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        </div>
-
-        <div id="questionsGrid" class="questions-grid">
-            Questions will be dynamically inserted here 
-        </div>
-
-        <div class="subject-filters" id="subjectFilters">
-             Subject filters will be dynamically inserted here 
-        </div>
-    </div>
-    
-</body>
-</html> -->
-
-<html>
-<head>
-    <title>Past Questions Explorer</title>
+    <title>Online Assesment System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="./assets/styles/pq.css">
     <style>
-        body {
-            background-color: #0a2a66;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            text-align: center;
-            padding: 20px;
-        }
-        .header {
-            font-size: 36px;
-            margin-bottom: 10px;
-        }
-        .sub-header {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        .search-bar {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .search-bar input {
-            width: 50%;
-            padding: 10px;
-            border-radius: 20px;
-            border: none;
-            outline: none;
-            font-size: 16px;
-        }
-        .questions {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .question-card {
-            background-color: #0d3a8a;
-            border-radius: 10px;
-            padding: 20px;
-            width: 200px;
-            text-align: left;
-        }
-        .question-card h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        .question-card p {
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        .question-card button {
-            background-color: #1a73e8;
-            color: #ffffff;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .question-card button i {
-            margin-right: 5px;
-        }
-        .navigation {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .navigation button {
-            background-color: #1a73e8;
-            color: #ffffff;
-            border: none;
-            border-radius: 50%;
-            padding: 10px;
-            cursor: pointer;
-            font-size: 20px;
-            margin: 0 10px;
-        }
-        .footer {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .footer a {
-            color: #1a73e8;
-            text-decoration: none;
-            margin: 0 10px;
-            font-size: 16px;
-        }
+       
     </style>
 </head>
 <body>
@@ -287,11 +21,11 @@
         <div class="search-bar">
             <input type="text" placeholder="Search questions...">
         </div>
-        <div class="questions">
+        <main class="questions">
             <div class="question-card">
                 <h3>Mathematics</h3>
                 <p>Solve for x: 2x + 5 = 13</p>
-                <button><i class="fas fa-eye"></i> View Question</button>
+                <button style="margin-top: 15px;"><i class="fas fa-eye"></i> View Question</button>
             </div>
             <div class="question-card">
                 <h3>Physics</h3>
@@ -308,7 +42,7 @@
                 <p>Describe the process of photosynthesis</p>
                 <button><i class="fas fa-eye"></i> View Question</button>
             </div>
-        </div>
+        </main>
         <div class="navigation">
             <button><i class="fas fa-arrow-right"></i></button>
         </div>

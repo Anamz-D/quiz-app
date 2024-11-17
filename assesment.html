@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ENCORE-EDUCATION Assessment Page</title>
-  <link rel="stylesheet" href="./assets/styles/base.css">
-  <link rel="stylesheet" href="/assets/styles/assesment.css">
-</head>
-<body>
-  <header>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Assesment System</title>
+    <link rel="stylesheet" href="./assets/styles/base.css">
+    <link rel="stylesheet" href="/assets/styles/assesment.css">
+  </head>
+  <body>
+    <div id="loading-wrapper"></div>
+    <header>
     <nav-bar></nav-bar>
   </header>
   <main class="container">
@@ -16,7 +17,7 @@
     <input type="text" class="search-bar" placeholder="Search assessments...">
     <div class="assessments">
       <div class="assessment-card">
-        <h3>Mathematics</h3>
+        <h3>CSC's</h3>
         <p>Mid Term Test</p>
         <p>Duration: 30minutes</p>
         <a href="#" class="assessment-btn">Start Assessment</a>
@@ -65,7 +66,19 @@
       </table>
     </div> -->
   </main>
-  <script type="module" src="./assets/js/index.js"></script>
+  
+  <script type="module">
+    import isAuthenticated from "./assets/js/index.js";
+    
+    const isActive = localStorage.getItem("isActive");
+    if(isActive){
+      document.getElementById("loading-wrapper").style.display = "none";
+    } else {
+      document.getElementById("loading-wrapper").style.display = "block";
+    }
+    isAuthenticated();
+
+  </script>
 
 </body>
 </html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Assesment System</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #22c55e;
+            --background: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--background);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            padding: 1rem;
+        }
+
+        .quiz-container {
+            background: var(--card);
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            width: 100%;
+            max-width: 32rem;
+            padding: 2rem;
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .quiz-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--primary-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .question {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .options {
+            display: grid;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .option {
+            position: relative;
+            padding: 1rem;
+            background: var(--background);
+            border: 2px solid transparent;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option:hover {
+            background: #f1f5f9;
+        }
+
+        .option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .option input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .option label {
+            display: block;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .button {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: var(--primary);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .button:hover {
+            background: var(--primary-hover);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            height: 0.5rem;
+            background: #e2e8f0;
+            border-radius: 1rem;
+            margin-top: 1.5rem;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .result {
+            text-align: center;
+        }
+
+        .score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .quiz-container {
+                padding: 1.5rem;
+            }
+
+            .quiz-title {
+                font-size: 1.5rem;
+            }
+
+            .question {
+                font-size: 1.125rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="quiz-container">
+        <div class="quiz-header">
+            <h1 class="quiz-title">Fun Quiz Time!</h1>
+        </div>
+
+        <section id="quiz-content">
+            <div><span id="current-question">1</span>/3 <span id="timer"></span></div>
+
+
+            <div class="question" id="question"></div>
+            <div class="options" id="options"></div>
+            <button class="button" id="submit-btn" disabled>Submit Answer</button>
+
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const quizData = [
+            {
+                question: "What is the capital of France?",
+                options: ["London", "Berlin", "Paris", "Madrid"],
+                correctAnswer: "Paris"
+            },
+            {
+                question: "Which planet is known as the Red Planet?",
+                options: ["Venus", "Mars", "Jupiter", "Saturn"],
+                correctAnswer: "Mars"
+            },
+            {
+                question: "Who painted the Mona Lisa?",
+                options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"],
+                correctAnswer: "Leonardo da Vinci"
+            }
+        ];
+
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+        let remainingTime = 300; // 5 minutes
+
+        // DOM elements
+        const questionEl = document.getElementById('question');
+        const optionsEl = document.getElementById('options');
+        const submitBtn = document.getElementById('submit-btn');
+
+        const progressEl = document.getElementById('progress');
+        const timerEl = document.getElementById('timer');
+        const quizContent = document.getElementById('quiz-content');
+
+        // Event listeners
+        submitBtn.addEventListener('click', handleSubmit);
+
+        // Initialize quiz
+        displayQuestion();
+
+
+        function displayQuestion() {
+            const current = quizData[currentQuestion];
+
+            questionEl.innerText = current.question;
+
+            optionsEl.innerHTML = current.options.map((option, index) => `
+                    <div class="option">
+                        <input type="radio" name="quiz" id="option${index}" value="${option}">
+                        <label for="option${index}">${option}</label>
+                    </div>
+                `).join('');
+
+            // Add event listeners to options
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    options.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedAnswer = option.querySelector('input').value;
+                    submitBtn.disabled = false;
+                });
+            });
+
+            // Update progress
+            const progress = ((currentQuestion) / quizData.length) * 100;
+            progressEl.style.width = `${progress}%`;
+        }
+
+        function handleSubmit() {
+            if (selectedAnswer === quizData[currentQuestion].correctAnswer) {
+                score++;
+            }
+
+            currentQuestion++;
+            selectedAnswer = null;
+            submitBtn.disabled = true;
+
+            document.getElementById('current-question').innerText = currentQuestion + 1;
+
+
+            if (currentQuestion < quizData.length) {
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            const percentage = (score / quizData.length) * 100;
+            quizContent.innerHTML = `
+                    <div class="result">
+                        <div class="score">Score: ${score}/${quizData.length}</div>
+                        <p>You got ${percentage}% of the questions correct!</p>
+                        <button class="button" onclick="location.reload()">Restart Quiz</button>
+                    </div>
+                `;
+            progressEl.style.width = '100%';
+        }
+
+        // setTimeout(showResults, 10 * 60000);
+        setInterval(() => {
+            const minutes = Math.floor(remainingTime / 60);
+            const seconds = remainingTime % 60;
+
+            // Format time as MM:SS
+            timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            // Stop the timer when it reaches 0
+            if (remainingTime <= 0) {
+                showResults()
+            }
+
+            remainingTime--;
+        }, 1000);
+
+    </script>
+</body>
+
+</html>
