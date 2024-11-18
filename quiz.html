@@ -232,7 +232,7 @@
         function displayQuestion() {
             const current = quizData[currentQuestion];
 
-            document.getElementById("current-question").textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+            document.getElementById("current-question").textContent = `Question ${currentQuestion + 1} / ${quizData.length}`;
             questionEl.innerText = current.question;
 
             optionsEl.innerHTML = current.options.map((option, index) => `
