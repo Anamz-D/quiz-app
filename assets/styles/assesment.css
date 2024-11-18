@@ -24,7 +24,6 @@ h1, h2 {
     color: #1e3a8a;
 }
 .search-bar {
-    /* width: 100%; */
     padding: 10px;
     margin-bottom: 20px;
     border: 2px solid #1e3a8a;
@@ -111,4 +110,9 @@ tr:nth-child(even) {
     .assessments {
         grid-template-columns: 1fr;
     }
+}
+@media (max-width: 990px) {
+    .assessments{
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+   }
 }

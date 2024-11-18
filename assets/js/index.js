@@ -6,7 +6,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/fi
 window.customElements.define("nav-bar", NavBar)
 
 
-function isAuthenticated() {
+function isAuthenticated(from) {
     // if ture 
     // else redirect to login 
     onAuthStateChanged(auth, (user) => {
@@ -20,7 +20,8 @@ function isAuthenticated() {
             // User is signed out
             // ...   
             localStorage.setItem("isActive", false)
-            window.location.href = `/log_in.html?from=assesment.html`; 
+            window.location.href = `/log_in.html?from=assesment.html`;
+            // window.location.href = `/log_in.html?from=${from}`; For dynamic router To work on every page 
         }
     });
 }
