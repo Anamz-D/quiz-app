@@ -24,7 +24,61 @@ body {
     align-items: center;
 }
 
+.alert {
+    position: relative;
+    padding: 16px 40px 16px 20px;
+    background-color: rgb(255, 235, 238);
+    color: rgb(155, 28, 28);
+    border-radius: 4px;
+    font-family: system-ui, -apple-system, sans-serif;
+    animation: slideIn 0.3s ease-out;
+    max-width: 400px;
+    margin: 20px;
+}
 
+.close-button {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: rgb(155, 28, 28);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.close-button:hover {
+    opacity: 1;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.alert.hide {
+    animation: slideOut 0.3s ease-out forwards;
+}
+
+@keyframes slideOut {
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
 
 .form-container {
     max-width: 400px;

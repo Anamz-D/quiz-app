@@ -18,7 +18,14 @@ body {
     background-size: cover;
     overflow-x: hidden;
     /* background-image: url(photo_2024-10-20_16-05-31.jpg); */
+
+
 }
+body:has(option[value="dark"]:checked){
+    background: black;
+    --text-color: white;
+}
+
 
 /* Main content */
 section {

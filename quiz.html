@@ -222,7 +222,7 @@
         let currentQuestion = 0;
         let score = 0;
         let selectedAnswer = null;
-        let remainingTime = 300; // 5 minutes
+        let remainingTime = 210; // 3.5 minutes
         let quizData = [];
 
         // DOM elements
@@ -246,7 +246,19 @@
 
         // Fetch quiz data
         async function getData(category) {
-            const url = `https://opentdb.com/api.php?amount=10&category=${category}`;
+            const url = new URL("https://opentdb.com/api.php");
+            url.searchParams.append("amount", "10");
+            if (category) {
+                url.searchParams.append("category", category);
+                if (category === "18"){
+                    url.searchParams.append("difficulty", "hard")
+                }
+                else if (category === "19") {
+                    url.searchParams.append("difficulty", "medium")
+
+                }
+            }
+
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -281,8 +293,10 @@
 
         // Initialize the quiz
         async function initializeQuiz() {
-            loadingEl.classList.remove('hidden');
-            const selectedCategory = localStorage.getItem("selectedCategory");
+            loadingEl.classList.remove('hidden'); // loading spinner
+
+            const params = new URLSearchParams(window.location.search)
+            const selectedCategory = params.get("category");
 
             quizData = await getData(selectedCategory); // Get quiz questions and answer
             loadingEl.classList.add("hidden");

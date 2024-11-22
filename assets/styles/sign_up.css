@@ -94,8 +94,60 @@ hr{
     margin: 15px;
 }
 
-.alert{
+.alert {
+    /* position: relative; */
+    display: flex;
+    justify-content: center;
+    padding: 16px 30px 17px 20px;
+    background-color: rgb(255, 235, 238);
+    color: rgb(155, 28, 28);
+    border-radius: 4px;
+    font-family: system-ui, -apple-system, sans-serif;
+    animation: slideIn 0.3s ease-out;
+    max-width: 600px;
+    margin-bottom: 1rem;
     display: none;
+
+}
+
+.close-button {
+    
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: rgb(155, 28, 28);
+    cursor: pointer;
+    
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.close-button:hover {
+    opacity: 1;
+    transform: scale(1.25);
+    transition: all .3s;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.alert.hide {
+    animation: slideOut 0.3s ease-out forwards;
+}
+
+@keyframes slideOut {
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
 }
 /* 
 h1 {
