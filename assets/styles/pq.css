@@ -5,8 +5,10 @@ header {
      padding: 1rem 0; 
     background: transparent;
 } */
-body {
-    background-color: #0a2a66;
+body ,html {
+    /* background-color: #0a2a66; */
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #1e3a8a, #1e40af);
     color: #ffffff;
     font-family: Arial, sans-serif;
     margin: 0;
@@ -43,31 +45,33 @@ body {
     gap: 20px;
     flex-wrap: wrap; */
  
-    /* display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
-    margin-left: 30px;
-    gap: 5px; */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
     
-    display: flex;
-    justify-content: space-evenly;
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    /* display: flex;
+    justify-content: space-evenly; */
+    gap: 1.5rem;
     margin-bottom: 3rem;
     padding: 7px;
 }
 .question-card {
-    background-color: #0d3a8a;
+    /* background-color: #0d3a8a; */
+    background-color: rgba(30, 64, 175, 0.5);
+    border: 1px solid #2563eb;
     border-radius: 10px;
     padding: 20px;
-     width: 200px;
+    /* width: 200px; */
     text-align: left;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: transform 0.3s, box-shadow 0.3s , background-color 0.3s;
     
 
 }
 .question-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background-color: rgba(30, 64, 175, 0.75);
+
 }
 .question-card h3 {
     font-size: 18px;
@@ -79,12 +83,18 @@ body {
 }
 .question-card button {
     background-color: #1a73e8;
+    /* background-color: #3b82f6; */
+
     color: #ffffff;
     border: none;
     border-radius: 20px;
     padding: 10px 20px;
     cursor: pointer;
     font-size: 14px;
+}
+.question-card button:hover {
+    background-color: #2563eb;
+
 }
 .question-card button i {
     margin-right: 5px;
@@ -117,9 +127,10 @@ body {
 }
 @media (max-width: 768px) {
     .questions{
+        grid-template-columns: 1fr;
+
         
-        
-        flex-direction: column;
+        /* flex-direction: column; */
     
         align-items: center;
         align-content: center;
@@ -131,4 +142,10 @@ body {
    .question-card:hover {
     transform: translateY(-8px);
    }   
+}
+@media (max-width: 990px) {
+    .questions{
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+    }   
 }
