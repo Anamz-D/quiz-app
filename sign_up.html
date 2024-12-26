@@ -54,7 +54,7 @@
                     // Signed up 
                     const user = userCredential.user;
                     localStorage.setItem("user", user)
-                    window.location.href = "/log_in.html";
+                    window.location.href = "/log_in.html"; //carry user to log in page 
                 })
                 .catch((error) => {
                     const errorCode = error.code;

@@ -51,7 +51,7 @@ section {
 .features {
     display: flex;
     justify-content: space-evenly;
-    grid-template-columns: 1fr;
+    /* grid-template-columns: 1fr; */
     gap: 1rem;
     margin-bottom: 3rem;
     padding: 7px;

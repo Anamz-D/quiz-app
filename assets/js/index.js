@@ -21,7 +21,7 @@ function isAuthenticated(from) {
             // ...   
             localStorage.setItem("isActive", false)
             window.location.href = `/log_in.html?from=assesment.html`;
-            // window.location.href = `/log_in.html?from=${from}`; For dynamic router To work on every page 
+            // window.location.href = `/log_in.html?from=${from}`; //For dynamic router To work on every page 
         }
     });
 }
