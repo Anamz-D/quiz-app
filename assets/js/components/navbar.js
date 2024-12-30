@@ -101,7 +101,7 @@ button.menu-toggle {
     </button>
     <div class="nav-links">
         <a href="index.html">Home</a>
-        <a href="assesment.html">Assessments</a>
+        <a href="dashboard.html">Dashboard</a>
         <a href="sign_up.html" id="sign-up" >Sign up</a>
         <a href="log_in.html" id="log-in">Login</a>
         <button id="logout-btn"> Logout </button>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Dashboard layout */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header h2 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar-nav ul {
+            list-style-type: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-nav a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav li.active a {
+            background-color: #34495e;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+        }
+
+        /* Main content styles */
+        .main-content {
+            padding: 30px;
+        }
+
+        .main-header {
+            margin-bottom: 30px;
+        }
+
+        .main-header h1 {
+            font-size: 28px;
+            color: #2c3e50;
+        }
+
+        /* Card styles */
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: #3498db;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            font-size: 20px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-footer {
+            padding: 20px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Profile info styles */
+        .profile-info {
+            margin-bottom: 15px;
+        }
+
+        .profile-info label {
+            font-weight: bold;
+            display: inline-block;
+            width: 150px;
+            margin-right: 10px;
+        }
+
+        .profile-info span,
+        .profile-info input {
+            display: inline-block;
+        }
+
+        .profile-info input {
+            width: calc(100% - 160px);
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Button styles */
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        #logoutBtn {
+            background-color: #e74c3c;
+            color: #fff;
+            width: 100%;
+        }
+
+        #logoutBtn:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-edit {
+            background-color: #2ecc71;
+            color: #fff;
+        }
+
+        .btn-edit:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-save {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        .btn-save:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-cancel {
+            background-color: #95a5a6;
+            color: #fff;
+        }
+
+        .btn-cancel:hover {
+            background-color: #7f8c8d;
+        }
+
+        /* Utility classes */
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .profile-info label,
+            .profile-info span,
+            .profile-info input {
+                display: block;
+                width: 100%;
+            }
+
+            .profile-info label {
+                margin-bottom: 5px;
+            }
+
+            .profile-info input {
+                margin-top: 5px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <header>
+        <nav-bar></nav-bar>
+    </header>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Dashboard</h2>
+            </div>
+
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Welcome, <span id="userDisplayName">User</span></h1>
+            </header>
+            <section class="profile-section">
+                <div class="card profile-card">
+                    <div class="card-header">
+                        <h2>Profile Information</h2>
+                        <button id="editBtn" class="btn-edit">Edit Profile</button>
+                    </div>
+                    <div class="card-body" id="profileInfo">
+                        <!-- Profile info will be inserted here by JavaScript -->
+                    </div>
+                    <div class="card-footer hidden" id="editButtons">
+                        <button id="saveBtn" class="btn-save">Save Changes</button>
+                        <button id="cancelBtn" class="btn-cancel">Cancel</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="./assets/js/index.js"></script>
+    <!-- <script type="module">
+        import { auth, db } from './assets/js/firebase.js';
+        import { doc, getDoc, updateDoc, Timestamp} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+
+        const profileInfo = document.getElementById('profileInfo');
+        const editBtn = document.getElementById('editBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        let currentUser = null;
+        let isEditing = false;
+
+
+
+        function displayUserInfo(data) {
+            const fields = ['fullName', 'email', 'createdAt'];
+            profileInfo.innerHTML = fields.map(field => `
+        <div class="profile-info">
+            <label>${field.charAt(0).toUpperCase() + field.slice(1)}:</label>
+            ${field === 'email' || field === 'createdAt'
+                    ? `<span id="${field}">${field === 'createdAt' ? data[field].toDate().toLocaleString() : data[field] || 'Not specified'}</span>`
+                    : `
+                    <span id="${field}">${data[field] || 'Not specified'}</span>
+                    <input type="text" id="${field}Input" class="hidden" value="${data[field] || ''}">
+                `
+                }
+        </div>
+    `).join('');
+            document.getElementById('userfullName').textContent = data.displayName || 'User';
+        }
+
+        function toggleEditMode() {
+            isEditing = !isEditing;
+            const fields = ['fullName'];
+            fields.forEach(field => {
+                const span = document.getElementById(field);
+                const input = document.getElementById(`${field}Input`);
+                if (span && input) {
+                    span.classList.toggle('hidden');
+                    input.classList.toggle('hidden');
+                }
+            });
+            editBtn.classList.toggle('hidden');
+            document.getElementById('editButtons').classList.toggle('hidden');
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                getDoc(doc(db, 'users', user.uid))
+                    .then((docSnap) => {
+                        if (docSnap.exists()) {
+                            const data = docSnap.data();
+                            displayUserInfo(data);
+                        } else {
+                            console.log("No such document!");
+                        }
+                    })
+                    .catch((error) => {
+                        console.log("Error getting document:", error);
+                    });
+            } else {
+                window.location.href = 'signup.html';
+            }
+        });
+
+        editBtn.addEventListener('click', toggleEditMode);
+
+        cancelBtn.addEventListener('click', () => {
+            toggleEditMode();
+            getDoc(doc(db, 'users', currentUser.uid))
+                .then((docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        displayUserInfo(data);
+                    }
+                });
+        });
+
+        saveBtn.addEventListener('click', () => {
+            const fields = ['fullName'];
+            const updatedData = {};
+            fields.forEach(field => {
+                const input = document.getElementById(`${field}Input`);
+                if (input) {
+                    updatedData[field] = input.value;
+                }
+            });
+
+            updateDoc(doc(db, 'users', currentUser.uid), {
+                ...updatedData,
+                updatedAt: serverTimestamp()
+            })
+                .then(() => {
+                    console.log("Document successfully updated!");
+                    toggleEditMode();
+                    getDoc(doc(db, 'users', currentUser.uid))
+                        .then((docSnap) => {
+                            if (docSnap.exists()) {
+                                displayUserInfo(docSnap.data());
+                            }
+                        });
+                })
+                .catch((error) => {
+                    console.error("Error updating document: ", error);
+                });
+        });
+    </script> -->
+    <script type="module">
+        import { auth, db } from './assets/js/firebase.js';
+        import { doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+
+        const profileInfo = document.getElementById('profileInfo');
+        const editBtn = document.getElementById('editBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        let currentUser = null;
+        let isEditing = false;
+
+        function displayUserInfo(data) {
+            const fields = ['fullName', 'email', 'createdAt'];
+            profileInfo.innerHTML = fields.map(field => `
+                <div class="profile-info">
+                    <label>${field.charAt(0).toUpperCase() + field.slice(1)}:</label>
+                    ${field === 'email' || field === 'createdAt'
+                    ? `<span id="${field}">${field === 'createdAt' ? data[field].toDate().toLocaleString() : data[field] || 'Not specified'}</span>`
+                    : `
+                        <span id="${field}">${data[field] || 'Not specified'}</span>
+                        <input type="text" id="${field}Input" class="hidden" value="${data[field] || ''}">
+                    `}
+                </div>
+            `).join('');
+            document.getElementById('userfullName').textContent = data.fullName || 'User';
+        }
+
+        function toggleEditMode() {
+            isEditing = !isEditing;
+            const fields = ['fullName'];
+            fields.forEach(field => {
+                const span = document.getElementById(field);
+                const input = document.getElementById(`${field}Input`);
+                if (span && input) {
+                    span.classList.toggle('hidden');
+                    input.classList.toggle('hidden');
+                }
+            });
+            editBtn.classList.toggle('hidden');
+            document.getElementById('editButtons').classList.toggle('hidden');
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            // if (user) {
+            //     currentUser = user;
+            //     getDoc(doc(db, 'users', user.uid))
+            //         .then((docSnap) => {
+            //             if (docSnap.exists()) {
+            //                 displayUserInfo(docSnap.data());
+            //             } else {
+            //                 console.error("No such document exists in Firestore!");
+            //             }
+            //         })
+            //         .catch((error) => {
+            //             console.error("Error fetching user data:", error);
+            //         });
+            // } else {
+            //     window.location.href = 'signup.html';
+            // }
+            if (user) {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    document.getElementById('userDisplayName').textContent = userData.fullName; // Display user's full name
+                    // You can add more user data display logic here
+                } else {
+                    console.log("No such document!");
+                }
+            } else {
+                window.location.href = 'log_in.html'; // Redirect to login if not authenticated
+            }
+        });
+
+        editBtn.addEventListener('click', toggleEditMode);
+
+        cancelBtn.addEventListener('click', () => {
+            toggleEditMode();
+            getDoc(doc(db, 'users', currentUser.uid))
+                .then((docSnap) => {
+                    if (docSnap.exists()) {
+                        displayUserInfo(docSnap.data());
+                    } else {
+                        console.error("Error fetching user data after cancel.");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error during cancel operation:", error);
+                });
+        });
+
+        saveBtn.addEventListener('click', () => {
+            const fields = ['fullName'];
+            const updatedData = {};
+
+            fields.forEach(field => {
+                const input = document.getElementById(`${field}Input`);
+                if (input) {
+                    updatedData[field] = input.value.trim(); // Get the trimmed value of the input field
+                }
+            });
+
+            console.log("Updated data to save:", updatedData); // Debugging step
+
+            updateDoc(doc(db, 'users', currentUser.uid), {
+                ...updatedData,
+                updatedAt: Timestamp.now() // Ensure you're adding a valid timestamp
+            })
+                .then(() => {
+                    console.log("Profile updated successfully!");
+                    toggleEditMode();
+                    return getDoc(doc(db, 'users', currentUser.uid));
+                })
+                .then((docSnap) => {
+                    if (docSnap.exists()) {
+                        displayUserInfo(docSnap.data());
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error updating profile:", error);
+                });
+        });
+
+
+    </script>
+
+</body>
+
+</html>

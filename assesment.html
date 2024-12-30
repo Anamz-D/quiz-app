@@ -20,7 +20,7 @@
         <h3>CSC's</h3>
         <p>Mid Term Test</p>
         <p>Duration: 5 minutes</p>
-        <a href="/quiz.html?category=18" data-category="18" class="assessment-btn">Start Assessment</a>
+        <a href="/quiz.html?category=18" data-category="18" class="assessment-btn" target="_blank">Start Assessment</a>
       </div>
       <div class="assessment-card">
         <h3>Physics</h3>
@@ -32,7 +32,7 @@
         <h3>Maths</h3>
         <p>Balancing Equations</p>
         <p>Duration: 5 minutes</p>
-        <a href="/quiz.html?category=19" class="assessment-btn">Start Assessment</a>
+        <a href="/quiz.html?category=19" class="assessment-btn" target="_blank">Start Assessment</a>
       </div>
       <div class="assessment-card">
         <h3>Biology</h3>
@@ -70,12 +70,7 @@
   <script type="module">
     import isAuthenticated from "./assets/js/index.js";
     
-    const isActive = localStorage.getItem("isActive");
-    if(isActive){
-      document.getElementById("loading-wrapper").style.display = "none";
-    } else {
-      document.getElementById("loading-wrapper").style.display = "block";
-    }
+    
     isAuthenticated();
     // isAuthenticated(`assesment.html`) if dynamic router was used on every page 
 

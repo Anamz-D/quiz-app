@@ -27,3 +27,4 @@ function isAuthenticated(from) {
 }
 
 export default isAuthenticated;
+

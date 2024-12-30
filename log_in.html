@@ -30,8 +30,7 @@
 
             <form id="login-form">
                 <!-- <label style="color: white;" for="login-email">Email</label> -->
-                <p id="form-err">
-                </p>
+                
                 <input type="email" id="login-email" placeholder=" Email" required style="margin-bottom: 12px;">
 
                 <!-- <label style="color: white;" for="login-password">Password</label> -->
@@ -50,8 +49,9 @@
 
     </main>
     <script type="module">
-        import { auth } from './assets/js/firebase.js';
+        import { auth, db } from './assets/js/firebase.js';
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import {   doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/110.1/firebase-firestore.js";
 
 
         const loginForm = document.getElementById("login-form")
@@ -108,6 +108,7 @@
                     }
                     else if (errorCode === "auth/invalid-credential") {
                         alert.style.display = "inline-block";
+                    
                         alertMsg.innerText = "Your username or password is incorrect!";
                     }
                     else {

@@ -43,17 +43,27 @@
     </main>
 
     <script type="module">
-        import { auth } from './assets/js/firebase.js';
+        import { auth, db } from './assets/js/firebase.js';
         import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { doc, setDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+      
+        console.log("Firestore DB:", db);  // Log the Firestore DB instance to verify it's initialized
 
         const signupForm = document.getElementById("signup-form");
 
+        // Function to register a new user
         function register(email, password) {
             createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
+                .then(async (userCredential) => {
                     // Signed up 
                     const user = userCredential.user;
-                    localStorage.setItem("user", user)
+                    // Save user data to Firestore
+                    await setDoc(doc(db, "users", user.uid), {
+                        fullName: fullName,
+                        email: email,
+                        createdAt: new Date()
+                    });
+                    localStorage.setItem("user",  JSON.stringify(user))
                     window.location.href = "/log_in.html"; //carry user to log in page 
                 })
                 .catch((error) => {
@@ -66,20 +76,23 @@
         signupForm.addEventListener("submit", function (event) {
             event.preventDefault();
             console.log("Form Submitted");
-            
+
             const formData = new FormData(event.target);
 
-            const fullName = formData.get("fullname");
+            const fullName = formData.get("fullname").trim();
             const signupEmail = formData.get("email");
             const signupPassword = formData.get("password");
             const confirmPassword = formData.get("confirm_password");
+
+            // Check the type of fullName
+            console.log(typeof fullName); // This should log "string"
             
-            if (signupPassword === confirmPassword) {                
-                register(signupEmail, signupPassword);
+            if (signupPassword === confirmPassword) {
+                register(signupEmail, signupPassword , fullName );
             } else {
                 alert("passwords do not match");
             }
-            
+
         })
 
 
