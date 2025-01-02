@@ -260,118 +260,10 @@
     </div>
 
     <script type="module" src="./assets/js/index.js"></script>
-    <!-- <script type="module">
-        import { auth, db } from './assets/js/firebase.js';
-        import { doc, getDoc, updateDoc, Timestamp} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
-
-        const profileInfo = document.getElementById('profileInfo');
-        const editBtn = document.getElementById('editBtn');
-        const saveBtn = document.getElementById('saveBtn');
-        const cancelBtn = document.getElementById('cancelBtn');
-
-        let currentUser = null;
-        let isEditing = false;
-
-
-
-        function displayUserInfo(data) {
-            const fields = ['fullName', 'email', 'createdAt'];
-            profileInfo.innerHTML = fields.map(field => `
-        <div class="profile-info">
-            <label>${field.charAt(0).toUpperCase() + field.slice(1)}:</label>
-            ${field === 'email' || field === 'createdAt'
-                    ? `<span id="${field}">${field === 'createdAt' ? data[field].toDate().toLocaleString() : data[field] || 'Not specified'}</span>`
-                    : `
-                    <span id="${field}">${data[field] || 'Not specified'}</span>
-                    <input type="text" id="${field}Input" class="hidden" value="${data[field] || ''}">
-                `
-                }
-        </div>
-    `).join('');
-            document.getElementById('userfullName').textContent = data.displayName || 'User';
-        }
-
-        function toggleEditMode() {
-            isEditing = !isEditing;
-            const fields = ['fullName'];
-            fields.forEach(field => {
-                const span = document.getElementById(field);
-                const input = document.getElementById(`${field}Input`);
-                if (span && input) {
-                    span.classList.toggle('hidden');
-                    input.classList.toggle('hidden');
-                }
-            });
-            editBtn.classList.toggle('hidden');
-            document.getElementById('editButtons').classList.toggle('hidden');
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                getDoc(doc(db, 'users', user.uid))
-                    .then((docSnap) => {
-                        if (docSnap.exists()) {
-                            const data = docSnap.data();
-                            displayUserInfo(data);
-                        } else {
-                            console.log("No such document!");
-                        }
-                    })
-                    .catch((error) => {
-                        console.log("Error getting document:", error);
-                    });
-            } else {
-                window.location.href = 'signup.html';
-            }
-        });
-
-        editBtn.addEventListener('click', toggleEditMode);
-
-        cancelBtn.addEventListener('click', () => {
-            toggleEditMode();
-            getDoc(doc(db, 'users', currentUser.uid))
-                .then((docSnap) => {
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        displayUserInfo(data);
-                    }
-                });
-        });
-
-        saveBtn.addEventListener('click', () => {
-            const fields = ['fullName'];
-            const updatedData = {};
-            fields.forEach(field => {
-                const input = document.getElementById(`${field}Input`);
-                if (input) {
-                    updatedData[field] = input.value;
-                }
-            });
-
-            updateDoc(doc(db, 'users', currentUser.uid), {
-                ...updatedData,
-                updatedAt: serverTimestamp()
-            })
-                .then(() => {
-                    console.log("Document successfully updated!");
-                    toggleEditMode();
-                    getDoc(doc(db, 'users', currentUser.uid))
-                        .then((docSnap) => {
-                            if (docSnap.exists()) {
-                                displayUserInfo(docSnap.data());
-                            }
-                        });
-                })
-                .catch((error) => {
-                    console.error("Error updating document: ", error);
-                });
-        });
-    </script> -->
+   
     <script type="module">
         import { auth, db } from './assets/js/firebase.js';
-        import { doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import {  doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
 
         const profileInfo = document.getElementById('profileInfo');
@@ -382,117 +274,111 @@
         let currentUser = null;
         let isEditing = false;
 
-        function displayUserInfo(data) {
-            const fields = ['fullName', 'email', 'createdAt'];
-            profileInfo.innerHTML = fields.map(field => `
-                <div class="profile-info">
-                    <label>${field.charAt(0).toUpperCase() + field.slice(1)}:</label>
-                    ${field === 'email' || field === 'createdAt'
-                    ? `<span id="${field}">${field === 'createdAt' ? data[field].toDate().toLocaleString() : data[field] || 'Not specified'}</span>`
-                    : `
-                        <span id="${field}">${data[field] || 'Not specified'}</span>
-                        <input type="text" id="${field}Input" class="hidden" value="${data[field] || ''}">
-                    `}
-                </div>
-            `).join('');
-            document.getElementById('userfullName').textContent = data.fullName || 'User';
-        }
+         // Check authentication state
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            // Fetch user data from Firestore
+            try {
+                const docRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(docRef);
 
-        function toggleEditMode() {
-            isEditing = !isEditing;
-            const fields = ['fullName'];
-            fields.forEach(field => {
-                const span = document.getElementById(field);
-                const input = document.getElementById(`${field}Input`);
-                if (span && input) {
-                    span.classList.toggle('hidden');
-                    input.classList.toggle('hidden');
+                if (docSnap.exists()) {
+                    userData = docSnap.data();
+                    displayUserData(userData);
                 }
-            });
-            editBtn.classList.toggle('hidden');
-            document.getElementById('editButtons').classList.toggle('hidden');
-        }
-
-        onAuthStateChanged(auth, async (user) => {
-            // if (user) {
-            //     currentUser = user;
-            //     getDoc(doc(db, 'users', user.uid))
-            //         .then((docSnap) => {
-            //             if (docSnap.exists()) {
-            //                 displayUserInfo(docSnap.data());
-            //             } else {
-            //                 console.error("No such document exists in Firestore!");
-            //             }
-            //         })
-            //         .catch((error) => {
-            //             console.error("Error fetching user data:", error);
-            //         });
-            // } else {
-            //     window.location.href = 'signup.html';
-            // }
-            if (user) {
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    document.getElementById('userDisplayName').textContent = userData.fullName; // Display user's full name
-                    // You can add more user data display logic here
-                } else {
-                    console.log("No such document!");
-                }
-            } else {
-                window.location.href = 'log_in.html'; // Redirect to login if not authenticated
+            } catch (error) {
+                console.error("Error fetching user data:", error);
             }
+        } else {
+            // Redirect to login if not authenticated
+            window.location.href = "/login.html";
+        }
+    });
+
+    // Display user data in the profile section
+    function displayUserData(data) {
+        // Update welcome message
+        userDisplayName.textContent = data.firstName;
+
+        // Create profile info HTML
+        const profileHTML = `
+            <div class="profile-info">
+                <label>First Name:</label>
+                <span>${data.firstName}</span>
+            </div>
+            <div class="profile-info">
+                <label>Last Name:</label>
+                <span>${data.lastName}</span>
+            </div>
+            <div class="profile-info">
+                <label>Email:</label>
+                <span>${data.email}</span>
+            </div>
+            <div class="profile-info">
+                <label>Account Created:</label>
+                <span>${new Date(data.createdAt).toLocaleDateString()}</span>
+            </div>
+        `;
+
+        profileInfo.innerHTML = profileHTML;
+    }
+
+    // Handle edit mode
+    editBtn.addEventListener('click', () => {
+        const profileInfos = profileInfo.querySelectorAll('.profile-info');
+        
+        profileInfos.forEach(info => {
+            const label = info.querySelector('label').textContent;
+            const span = info.querySelector('span');
+            const value = span.textContent;
+
+            // Don't make email and creation date editable
+            if (label.includes('Email') || label.includes('Created')) {
+                return;
+            }
+
+            const input = document.createElement('input');
+            input.value = value;
+            input.className = 'edit-input';
+            span.replaceWith(input);
         });
 
-        editBtn.addEventListener('click', toggleEditMode);
+        editButtons.classList.remove('hidden');
+        editBtn.classList.add('hidden');
+    });
 
-        cancelBtn.addEventListener('click', () => {
-            toggleEditMode();
-            getDoc(doc(db, 'users', currentUser.uid))
-                .then((docSnap) => {
-                    if (docSnap.exists()) {
-                        displayUserInfo(docSnap.data());
-                    } else {
-                        console.error("Error fetching user data after cancel.");
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error during cancel operation:", error);
-                });
-        });
+    // Handle save
+    saveBtn.addEventListener('click', async () => {
+        const updatedData = {
+            ...userData,
+            firstName: profileInfo.querySelector('input:nth-of-type(1)').value,
+            lastName: profileInfo.querySelector('input:nth-of-type(2)').value
+        };
 
-        saveBtn.addEventListener('click', () => {
-            const fields = ['fullName'];
-            const updatedData = {};
+        try {
+            // Update Firestore
+            await updateDoc(doc(db, "users", currentUser.uid), updatedData);
+            userData = updatedData;
+            displayUserData(userData);
+            
+            editButtons.classList.add('hidden');
+            editBtn.classList.remove('hidden');
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            alert("Failed to update profile");
+        }
+    });
 
-            fields.forEach(field => {
-                const input = document.getElementById(`${field}Input`);
-                if (input) {
-                    updatedData[field] = input.value.trim(); // Get the trimmed value of the input field
-                }
-            });
+    // Handle cancel
+    cancelBtn.addEventListener('click', () => {
+        displayUserData(userData);
+        editButtons.classList.add('hidden');
+        editBtn.classList.remove('hidden');
+    });
 
-            console.log("Updated data to save:", updatedData); // Debugging step
 
-            updateDoc(doc(db, 'users', currentUser.uid), {
-                ...updatedData,
-                updatedAt: Timestamp.now() // Ensure you're adding a valid timestamp
-            })
-                .then(() => {
-                    console.log("Profile updated successfully!");
-                    toggleEditMode();
-                    return getDoc(doc(db, 'users', currentUser.uid));
-                })
-                .then((docSnap) => {
-                    if (docSnap.exists()) {
-                        displayUserInfo(docSnap.data());
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error updating profile:", error);
-                });
-        });
-
+       
 
     </script>
 
