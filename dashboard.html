@@ -260,125 +260,116 @@
     </div>
 
     <script type="module" src="./assets/js/index.js"></script>
-   
+
     <script type="module">
         import { auth, db } from './assets/js/firebase.js';
-        import {  doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
 
+        let userData = null;
+        let currentUser = null;
+
         const profileInfo = document.getElementById('profileInfo');
-        const editBtn = document.getElementById('editBtn');
         const saveBtn = document.getElementById('saveBtn');
+        const editBtn = document.getElementById('editBtn');
+        const editButtons = document.getElementById('editButtons');
         const cancelBtn = document.getElementById('cancelBtn');
 
-        let currentUser = null;
-        let isEditing = false;
+        function displayUserData(data) {
+            const userDisplayName = document.getElementById('userDisplayName');
+            userDisplayName.textContent = data.fullName || 'User';
 
-         // Check authentication state
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            currentUser = user;
-            // Fetch user data from Firestore
-            try {
-                const docRef = doc(db, "users", user.uid);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    userData = docSnap.data();
-                    displayUserData(userData);
-                }
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-            }
-        } else {
-            // Redirect to login if not authenticated
-            window.location.href = "/login.html";
-        }
-    });
-
-    // Display user data in the profile section
-    function displayUserData(data) {
-        // Update welcome message
-        userDisplayName.textContent = data.firstName;
-
-        // Create profile info HTML
-        const profileHTML = `
+            const profileHTML = `
             <div class="profile-info">
-                <label>First Name:</label>
-                <span>${data.firstName}</span>
-            </div>
-            <div class="profile-info">
-                <label>Last Name:</label>
-                <span>${data.lastName}</span>
+                <label>Full Name:</label>
+                <span>${data.fullName || 'Not set'}</span>
             </div>
             <div class="profile-info">
                 <label>Email:</label>
-                <span>${data.email}</span>
+                <span>${data.email || 'Not set'}</span>
             </div>
             <div class="profile-info">
                 <label>Account Created:</label>
-                <span>${new Date(data.createdAt).toLocaleDateString()}</span>
+                <span>${data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'Not available'}</span>
             </div>
         `;
 
-        profileInfo.innerHTML = profileHTML;
-    }
+            profileInfo.innerHTML = profileHTML;
+        }
 
-    // Handle edit mode
-    editBtn.addEventListener('click', () => {
-        const profileInfos = profileInfo.querySelectorAll('.profile-info');
-        
-        profileInfos.forEach(info => {
-            const label = info.querySelector('label').textContent;
-            const span = info.querySelector('span');
-            const value = span.textContent;
+        // Check authentication state
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                try {
+                    const docRef = doc(db, "users", user.uid);
+                    const docSnap = await getDoc(docRef);
 
-            // Don't make email and creation date editable
-            if (label.includes('Email') || label.includes('Created')) {
-                return;
+                    if (docSnap.exists()) {
+                        userData = docSnap.data();
+                        displayUserData(userData);
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                }
+            } else {
+                window.location.href = "/log_in.html";
             }
-
-            const input = document.createElement('input');
-            input.value = value;
-            input.className = 'edit-input';
-            span.replaceWith(input);
         });
 
-        editButtons.classList.remove('hidden');
-        editBtn.classList.add('hidden');
-    });
+        // Handle edit mode
+        editBtn.addEventListener('click', () => {
+            const profileInfos = profileInfo.querySelectorAll('.profile-info');
 
-    // Handle save
-    saveBtn.addEventListener('click', async () => {
-        const updatedData = {
-            ...userData,
-            firstName: profileInfo.querySelector('input:nth-of-type(1)').value,
-            lastName: profileInfo.querySelector('input:nth-of-type(2)').value
-        };
+            profileInfos.forEach(info => {
+                const label = info.querySelector('label').textContent;
+                const span = info.querySelector('span');
+                const value = span.textContent;
 
-        try {
-            // Update Firestore
-            await updateDoc(doc(db, "users", currentUser.uid), updatedData);
-            userData = updatedData;
+                if (label.includes('Email') || label.includes('Created')) {
+                    return;
+                }
+
+                const input = document.createElement('input');
+                input.value = value;
+                input.className = 'edit-input';
+                span.replaceWith(input);
+            });
+
+            editButtons.classList.remove('hidden');
+            editBtn.classList.add('hidden');
+        });
+
+        // Handle save
+        saveBtn.addEventListener('click', async () => {
+            const updatedData = {
+                ...userData,
+                fullName: profileInfo.querySelector('input').value,
+                updatedAt: serverTimestamp()
+            };
+
+            try {
+                await updateDoc(doc(db, "users", currentUser.uid), updatedData);
+                userData = updatedData;
+                displayUserData(userData);
+
+                editButtons.classList.add('hidden');
+                editBtn.classList.remove('hidden');
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                alert("Failed to update profile");
+            }
+        });
+
+        // Handle cancel
+        cancelBtn.addEventListener('click', () => {
             displayUserData(userData);
-            
             editButtons.classList.add('hidden');
             editBtn.classList.remove('hidden');
-        } catch (error) {
-            console.error("Error updating profile:", error);
-            alert("Failed to update profile");
-        }
-    });
-
-    // Handle cancel
-    cancelBtn.addEventListener('click', () => {
-        displayUserData(userData);
-        editButtons.classList.add('hidden');
-        editBtn.classList.remove('hidden');
-    });
+        });
 
 
-       
+
 
     </script>
 

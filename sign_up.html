@@ -45,7 +45,7 @@
     <script type="module">
         import { auth, db } from './assets/js/firebase.js';
         import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { doc, setDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { doc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         console.log("Firestore DB:", db);  // Log the Firestore DB instance to verify it's initialized
 
@@ -53,32 +53,34 @@
 
 
 
-        signupForm.addEventListener("submit", function (event) {
+        signupForm.addEventListener("submit", async function (event) {
             event.preventDefault();
             console.log("Form Submitted");
 
             const formData = new FormData(event.target);
 
-            const fullName = formData.get("fullname").trim();
+            const fullName = formData.get("fullname");
             const signupEmail = formData.get("email");
             const signupPassword = formData.get("password");
             const confirmPassword = formData.get("confirm_password");
 
             // Function to register a new user
-            function register(email, password) {
-                createUserWithEmailAndPassword(auth, email, password)
-                    .then((userCredential) => {
+           async function register(email, password) {
+              await  createUserWithEmailAndPassword(auth, email, password)
+                    .then(async (userCredential) => {
                         // Signed up 
                         const user = userCredential.user;
 
-                        const userData = {
-                            fullName : fullName ,
-                            signupEmail : signupEmail 
-                        }
-                        const docRef = doc(db,"users",user.uid);
-                        setDoc (docRef,userData)
+                        // Store user information in Firestore
+                        await setDoc(doc(db, "users", user.uid), {
+                            fullName: fullName,
+                            email: email,
+                            createdAt: serverTimestamp()
+                        });
 
                         localStorage.setItem("user", user)
+                        // Redirect or show success message
+                        console.log("User signed up and data stored in Firestore")
                         window.location.href = "/log_in.html"; //carry user to log in page 
                     })
                     .catch((error) => {
