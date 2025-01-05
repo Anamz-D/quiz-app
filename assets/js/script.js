@@ -1,8 +1,4 @@
-// let link = document.createElement('link');
-// link.rel = 'stylesheet';
-// link.href = './assets/styles/import_export.css';
-// document.head.appendChild(link);
-// Global state
+
 let currentUserType = null;
 
 // DOM Elements

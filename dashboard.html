@@ -289,6 +289,10 @@
                 <span>${data.email || 'Not set'}</span>
             </div>
             <div class="profile-info">
+                <label>Role:</label>
+                <span>${data.role || 'Not set'}</span>
+            </div>
+            <div class="profile-info">
                 <label>Account Created:</label>
                 <span>${data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'Not available'}</span>
             </div>

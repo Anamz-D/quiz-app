@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Online Assesment System</title>
     <link rel="stylesheet" href="./assets/styles/base.css">
-    <link rel="stylesheet" href="./assets/styles/accesspage.css">
+    <link rel="stylesheet" href="./assets/styles/authpage.css">
 </head>
 
 <body>
@@ -23,16 +23,19 @@
                 <!-- <label for="signup-email">Email</label> -->
                 <input type="email" id="email" name="email" placeholder=" Email" required><br>
 
-
                 <!-- <label for="signup-password">Password</label> -->
                 <input type="password" id="password" name="password" placeholder=" Password" required><br>
 
-
                 <!-- <label for="signup-confirm-password">Confirm Password</label> -->
-                <input type="password" id="confirm_password" name="confirm_password" placeholder=" confirm Password"
-                    required><br>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder=" confirm Password" required><br>
 
-                <div class="form-footer">
+                <select id="role" name="role" required>
+                    <option value="">Select Role</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="student">Student</option>
+                </select>
+          
+               <div class="form-footer">
                     <button class="form-footer-btn" type="submit">Sign Up</button><br>
                     <hr>
                     <p>Already have an account ? <a href="log_in.html"> Log In</a></p>
@@ -63,6 +66,9 @@
             const signupEmail = formData.get("email");
             const signupPassword = formData.get("password");
             const confirmPassword = formData.get("confirm_password");
+            const role = formData.get("role");
+
+
 
             // Function to register a new user
            async function register(email, password) {
@@ -75,6 +81,7 @@
                         await setDoc(doc(db, "users", user.uid), {
                             fullName: fullName,
                             email: email,
+                            role : role ,
                             createdAt: serverTimestamp()
                         });
 
