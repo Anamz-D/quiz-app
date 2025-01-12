@@ -77,14 +77,6 @@
                     const userDocRef = doc(db, "users", user.uid);
                     const userDocSnap = await getDoc(userDocRef);
 
-                    if (userDocSnap.exists()) {
-                        // User data retrieved successfully
-                        const userData = userDocSnap.data();
-                        console.log("User Data:", userData); // Display user data in console
-
-                    } else {
-                        console.log("No such document!");
-                    }
 
                     // Redirect user to last page visited
                     const params = new URLSearchParams(window.location.search)
