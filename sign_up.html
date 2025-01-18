@@ -27,15 +27,16 @@
                 <input type="password" id="password" name="password" placeholder=" Password" required><br>
 
                 <!-- <label for="signup-confirm-password">Confirm Password</label> -->
-                <input type="password" id="confirm_password" name="confirm_password" placeholder=" confirm Password" required><br>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder=" confirm Password"
+                    required><br>
 
                 <select id="role" name="role" required>
                     <option value="">Select Role</option>
                     <option value="teacher">Teacher</option>
                     <option value="student">Student</option>
                 </select>
-          
-               <div class="form-footer">
+
+                <div class="form-footer">
                     <button class="form-footer-btn" type="submit">Sign Up</button><br>
                     <hr>
                     <p>Already have an account ? <a href="log_in.html"> Log In</a></p>
@@ -48,7 +49,7 @@
     <script type="module">
         import { auth, db } from './assets/js/firebase.js';
         import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { doc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { doc, setDoc, updateDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         console.log("Firestore DB:", db);  // Log the Firestore DB instance to verify it's initialized
 
@@ -71,24 +72,36 @@
 
 
             // Function to register a new user
-           async function register(email, password) {
-              await  createUserWithEmailAndPassword(auth, email, password)
+            async function register(email, password) {
+                await createUserWithEmailAndPassword(auth, email, password)
                     .then(async (userCredential) => {
                         // Signed up 
                         const user = userCredential.user;
+
+                        const userDocRef = doc(db, "users", user.uid);
+                        const userDocData = (await getDoc(userDocRef)).data();
 
                         // Store user information in Firestore
                         await setDoc(doc(db, "users", user.uid), {
                             fullName: fullName,
                             email: email,
-                            role : role ,
+                            role: role,
                             createdAt: serverTimestamp()
                         });
 
                         localStorage.setItem("user", user)
-                        // Redirect or show success message
-                        console.log("User signed up and data stored in Firestore")
-                        window.location.href = "/log_in.html"; //carry user to log in page 
+
+                        // Redirect user to assigned role dashboard
+                        console.log("User signed up and data stored in Firestore", userDocData)
+                        if (userDocData.role == "teacher") {
+                            window.location.href = "/dashboard.html"; // Replace this with the actual teacher's dashboard
+                        }
+                        else if (userDocData.role == "student") {
+                            window.location.href = "/index.html"
+                        }
+                        else {
+                            console.error("An error has occured")
+                        }
                     })
                     .catch((error) => {
                         const errorCode = error.code;

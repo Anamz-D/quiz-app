@@ -75,16 +75,29 @@
 
                     // Fetch user data from Firestore
                     const userDocRef = doc(db, "users", user.uid);
-                    const userDocSnap = await getDoc(userDocRef);
+                    const userDocData = (await getDoc(userDocRef)).data();
 
 
-                    // Redirect user to last page visited
-                    const params = new URLSearchParams(window.location.search)
-                    if (params.has("from")) {
-                        window.location.href = params.get("from")
-                    } else {
-                        window.location.href = "/index.html";
+                    // NOTE: Disabled logic for "Redirect user to last page visited"
+                    
+                    // const params = new URLSearchParams(window.location.search)
+                    // if (params.has("from")) {
+                    //     window.location.href = params.get("from")
+                    // } else {
+                    //     window.location.href = "/index.html";
+                    // }
+
+                    console.log("User signed in and data fetched from Firestore", userDocData)
+                    if (userDocData.role =="teacher"){
+                        window.location.href = "/dashboard.html"; // Replace this with the actual teacher's dashboard
                     }
+                    else if (userDocData.role =="student"){
+                        window.location.href = "/index.html"                        
+                    }
+                    else{
+                        console.error("An error has occured")
+                    }
+
                 })
                 .catch((error) => {
                     const errorCode = error.code;
