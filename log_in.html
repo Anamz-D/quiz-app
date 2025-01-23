@@ -50,7 +50,7 @@
     </main>
     <script type="module">
         import { auth, db } from './assets/js/firebase.js';
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword , onAuthStateChanged  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
         import { doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 
@@ -76,7 +76,7 @@
                     // Fetch user data from Firestore
                     const userDocRef = doc(db, "users", user.uid);
                     const userDocData = (await getDoc(userDocRef)).data();
-
+                    // const userDocSnap = await getDoc(userDocRef);
 
                     // NOTE: Disabled logic for "Redirect user to last page visited"
                     
@@ -86,12 +86,13 @@
                     // } else {
                     //     window.location.href = "/index.html";
                     // }
-
+                    const userData = userDocData;
+                    const userRole = userData.role;
                     console.log("User signed in and data fetched from Firestore", userDocData)
-                    if (userDocData.role =="teacher"){
-                        window.location.href = "/dashboard.html"; // Replace this with the actual teacher's dashboard
+                    if (userRole =="teacher"){
+                        window.location.href = "/teacher.html"; // Replace this with the actual teacher's dashboard
                     }
-                    else if (userDocData.role =="student"){
+                    else if (userRole =="student"){
                         window.location.href = "/index.html"                        
                     }
                     else{

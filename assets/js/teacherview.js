@@ -6,7 +6,26 @@
 
   
   // Usage
-  
+  function handleNavigation(event) {
+    if (event.target.tagName === 'A') {
+        event.preventDefault();
+        const page = event.target.getAttribute('data-page');
+        navigateTo(page);
+    }
+}
+
+
+function navigateTo(page) {
+    switch (page) {
+        case 'assessments':
+            currentUserType === 'teacher' ? renderManageAssessments() : renderAssessmentType();
+            break;
+
+        default:
+            renderHome();
+    }
+}
+
 function renderManageAssessments() {
     const content = `
         <div class="container">

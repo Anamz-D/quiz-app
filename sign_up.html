@@ -92,16 +92,16 @@
                         localStorage.setItem("user", user)
 
                         // Redirect user to assigned role dashboard
-                        console.log("User signed up and data stored in Firestore", userDocData)
-                        if (userDocData.role == "teacher") {
-                            window.location.href = "/dashboard.html"; // Replace this with the actual teacher's dashboard
-                        }
-                        else if (userDocData.role == "student") {
-                            window.location.href = "/index.html"
-                        }
-                        else {
-                            console.error("An error has occured")
-                        }
+                        // console.log("User signed up and data stored in Firestore", userDocData)
+                        // if (userDocData.role == "teacher") {
+                        //     window.location.href = "/dashboard.html"; // Replace this with the actual teacher's dashboard
+                        // }
+                        // else if (userDocData.role == "student") {
+                           window.location.href = "/index.html"
+                        // }
+                        // else {
+                        //     console.error("An error has occured")
+                       // }
                     })
                     .catch((error) => {
                         const errorCode = error.code;

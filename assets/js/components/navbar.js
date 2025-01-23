@@ -1,5 +1,6 @@
-import { auth } from '../firebase.js';
-import { signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { auth, db } from '../firebase.js';
+import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 
 const template = document.createElement("template");
@@ -100,7 +101,7 @@ button.menu-toggle {
       <i class='bx bx-menu'></i>
     </button>
     <div class="nav-links">
-        <a href="index.html">Home</a>
+        <a href="index.html" id="home">Home</a>
         <a href="dashboard.html">Dashboard</a>
         <a href="sign_up.html" id="sign-up" >Sign up</a>
         <a href="log_in.html" id="log-in">Login</a>
@@ -125,40 +126,48 @@ class NavBar extends HTMLElement {
         const logoutBtn = this.shadowRoot.getElementById("logout-btn");
         const signupLink = this.shadowRoot.getElementById("sign-up");
         const loginLink = this.shadowRoot.getElementById("log-in");
+        const homeLink = this.shadowRoot.getElementById("home");
 
         let isMenuOpen = false;
 
 
         // Check authentication status and update UI
-        const updateAuthUI = () => {
-            const isAuthenticated = localStorage.getItem("user") !== null;
+        const updateAuthUI = async (user) => {
+           
+            if (user) {
+                // Fetch user data from Firestore
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
 
-            if (isAuthenticated) {
-                // User is logged in - hide signup/login, show logout
-               signupLink.style.display = "none";
-               loginLink.style.display = "none";
-               logoutBtn.style.display = "inline-block";
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    const userRole = userData.role;
 
-                
+                    // Update navbar based on role
+                    if (userRole === "student") {
+                        homeLink.href = "index.html";
+                    } else if (userRole === "teacher") {
+                        homeLink.href = "teacher.html";
+                    }
+
+                    // Hide signup/login links and show logout button
+                    signupLink.style.display = "none";
+                    loginLink.style.display = "none";
+                    logoutBtn.style.display = "inline-block";
+                }
             } else {
-                // User is logged out - show signup/login, hide logout
+                // User is not logged in, show signup/login links and hide logout button
                 signupLink.style.display = "inline-block";
                 loginLink.style.display = "inline-block";
                 logoutBtn.style.display = "none";
             }
-        }
-        // Initial UI update
-        updateAuthUI();
+            // Initial UI update
+        };
 
-        // TODO Modify
-        // if (localStorage.getItem("user")){
-        //     this.shadowRoot.getElementById("sign-up").style.display = "none";
-        //     this.shadowRoot.getElementById("log-in").style.display = "none";
-        // }else{
-        //     this.shadowRoot.getElementById("sign-up").style.display = "inline-block";
-        //     this.shadowRoot.getElementById("log-in").style.display = "inline-block";
-        // }
-
+        // Check authentication state and update UI
+        onAuthStateChanged(auth, (user) => {
+            updateAuthUI(user); // Pass the user object to the function
+        });
 
         //Toggle menu Function
         function toggleMenu() {
@@ -196,6 +205,7 @@ class NavBar extends HTMLElement {
         )
 
     }
+    
 
 }
 
