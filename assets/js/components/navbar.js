@@ -1,6 +1,7 @@
-import { auth, db } from '../firebase.js';
-import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { auth , db  } from '../firebase.js';
+import { signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
 
 
 const template = document.createElement("template");
@@ -102,7 +103,8 @@ button.menu-toggle {
     </button>
     <div class="nav-links">
         <a href="index.html" id="home">Home</a>
-        <a href="dashboard.html">Dashboard</a>
+        <a href="teacher.html" id="teacher-page" >Home</a>
+        <a href="Dashboard.html">Dashboard</a>
         <a href="sign_up.html" id="sign-up" >Sign up</a>
         <a href="log_in.html" id="log-in">Login</a>
         <button id="logout-btn"> Logout </button>
@@ -127,47 +129,53 @@ class NavBar extends HTMLElement {
         const signupLink = this.shadowRoot.getElementById("sign-up");
         const loginLink = this.shadowRoot.getElementById("log-in");
         const homeLink = this.shadowRoot.getElementById("home");
+        const teacherLink = this.shadowRoot.getElementById("teacher-page");
 
         let isMenuOpen = false;
 
 
         // Check authentication status and update UI
-        const updateAuthUI = async (user) => {
-           
-            if (user) {
-                // Fetch user data from Firestore
-                const userDocRef = doc(db, "users", user.uid);
-                const userDocSnap = await getDoc(userDocRef);
+        const updateAuthUI = async () => {
+            const isAuthenticated = localStorage.getItem("user") !== null;
 
-                if (userDocSnap.exists()) {
-                    const userData = userDocSnap.data();
-                    const userRole = userData.role;
+            if (isAuthenticated) {
+                // User is logged in - hide signup/login, show logout
+            
+                signupLink.style.display = "none";
+                loginLink.style.display = "none";
+                logoutBtn.style.display = "inline-block";
 
-                    // Update navbar based on role
-                    if (userRole === "student") {
-                        homeLink.href = "index.html";
-                    } else if (userRole === "teacher") {
-                        homeLink.href = "teacher.html";
-                    }
+                const role = localStorage.getItem("role");
 
-                    // Hide signup/login links and show logout button
+                if (role === "teacher") {
                     signupLink.style.display = "none";
                     loginLink.style.display = "none";
                     logoutBtn.style.display = "inline-block";
+                    homeLink.style.display = "none";
+                    teacherLink.style.display = "inline-block";
+                } else if (role === "student") {
+                    signupLink.style.display = "none";
+                    loginLink.style.display = "none";
+                    logoutBtn.style.display = "inline-block";
+                    homeLink.style.display = "inline-block";
+                    teacherLink.style.display = "none";
                 }
+                     
             } else {
-                // User is not logged in, show signup/login links and hide logout button
+                // User is logged out - show signup/login, hide logout
                 signupLink.style.display = "inline-block";
                 loginLink.style.display = "inline-block";
                 logoutBtn.style.display = "none";
+            
             }
-            // Initial UI update
-        };
 
-        // Check authentication state and update UI
-        onAuthStateChanged(auth, (user) => {
-            updateAuthUI(user); // Pass the user object to the function
-        });
+           
+        }
+        // Initial UI update
+        updateAuthUI();
+
+
+    
 
         //Toggle menu Function
         function toggleMenu() {
@@ -205,7 +213,6 @@ class NavBar extends HTMLElement {
         )
 
     }
-    
 
 }
 

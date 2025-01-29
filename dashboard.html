@@ -315,6 +315,8 @@
                     if (docSnap.exists()) {
                         userData = docSnap.data();
                         displayUserData(userData);
+                        // Store user's role in local storage
+                         localStorage.setItem("role", userData.role)
                     }
                 } catch (error) {
                     console.error("Error fetching user data:", error);

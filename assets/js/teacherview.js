@@ -1,28 +1,34 @@
+const mainContent = document.getElementById("main-content");
 
-    let link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = './assets/styles/import_export.css';
-    document.head.appendChild(link);
+let link = document.createElement('link');
+link.rel = 'stylesheet';
+link.href = './assets/styles/import_export.css';
+document.head.appendChild(link);
 
   
-  // Usage
-  function handleNavigation(event) {
-    if (event.target.tagName === 'A') {
-        event.preventDefault();
-        const page = event.target.getAttribute('data-page');
-        navigateTo(page);
-    }
-}
 
+function renderTeacherView(callback) {
+   const content = `
 
-function navigateTo(page) {
-    switch (page) {
-        case 'assessments':
-            currentUserType === 'teacher' ? renderManageAssessments() : renderAssessmentType();
-            break;
-
-        default:
-            renderHome();
+    <a href="pq.html">
+        <div class="feature-card">
+            <img src="./assets/images/menu_book.png" alt="Past Questions">
+            <h3>Past Questions</h3>
+            <p>Access a wide range of past questions to practice and improve your skills</p>
+        </div>
+    </a>
+    <a href="" id="manage-assessments" >
+        <div class="feature-card">
+            <img src="assets/images/monitoring.png" alt="Track Progress" >
+            <h3>Manange assessments</h3>
+            <p>Create , edit and delete assesments</p>
+        </div>
+    </a>   
+   
+   `;
+    mainContent.innerHTML = content;
+    if (callback) {
+        callback();
     }
 }
 
@@ -266,3 +272,26 @@ let mockAssessments = [
     }
 ];
 
+window.addEventListener('load', function(){
+    if (window.location.pathname === '/teacher.html') {
+        renderTeacherView(function(){
+
+            const manageAssessments = document.getElementById('manage-assessments');
+            manageAssessments.addEventListener('click', function(event) {
+                
+                event.preventDefault();
+                renderManageAssessments();
+
+            });
+        });
+    }
+   
+
+});
+
+// Make the function globally accessible
+window.renderCreateAssessment = renderCreateAssessment;
+window.addQuestion = addQuestion;
+window.removeQuestion = removeQuestion;
+window.editAssessment = editAssessment;
+window.deleteAssessment = deleteAssessment;
