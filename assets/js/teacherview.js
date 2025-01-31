@@ -14,14 +14,21 @@ function renderTeacherView(callback) {
         <div class="feature-card">
             <img src="./assets/images/menu_book.png" alt="Past Questions">
             <h3>Past Questions</h3>
-            <p>Access a wide range of past questions to practice and improve your skills</p>
+            <p>Access a wide range/array of pq's  to take questions from</p>
+        </div>
+    </a>
+    <a id="create-assessments">
+        <div class="feature-card">
+            <img src="./assets/images/1106.jpg" alt="">
+            <h3>Create Aseesments</h3>
+            <p>Make comprehensive assesments for your students</p>
         </div>
     </a>
     <a href="" id="manage-assessments" >
         <div class="feature-card">
-            <img src="assets/images/monitoring.png" alt="Track Progress" >
+            <img src="./assets/images/monitoring.png" alt="Track Progress" >
             <h3>Manange assessments</h3>
-            <p>Create , edit and delete assesments</p>
+            <p> edit and delete assesments from the database </p>
         </div>
     </a>   
    
@@ -72,6 +79,7 @@ function renderCreateAssessment() {
                 </div>
                 <button type="submit" class="btn">Create Assessment</button>
             </form>
+            <a href="./teacher.html"><button class="btn">Cancel</button></a>
         </div>
     `;
     mainContent.innerHTML = content;
@@ -283,10 +291,17 @@ window.addEventListener('load', function(){
                 renderManageAssessments();
 
             });
+            const createAssessments = document.getElementById('create-assessments');
+            createAssessments.addEventListener('click', function(event) {
+                
+                event.preventDefault();
+                renderCreateAssessment();
+
+            });
+
         });
     }
    
-
 });
 
 // Make the function globally accessible

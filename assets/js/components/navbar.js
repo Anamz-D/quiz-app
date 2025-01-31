@@ -166,6 +166,7 @@ class NavBar extends HTMLElement {
                 signupLink.style.display = "inline-block";
                 loginLink.style.display = "inline-block";
                 logoutBtn.style.display = "none";
+                teacherLink.style.display = "none";
             
             }
 
