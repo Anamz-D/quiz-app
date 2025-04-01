@@ -1,28 +1,14 @@
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
+
 import { collection ,doc, addDoc ,getDoc, getDocs , setDoc , updateDoc, deleteDoc , Timestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import {  db } from '/assets/js/firebase.js';
 const mainContent = document.getElementById("main-content");
->>>>>>> Stashed changes
-=======
-const mainContent = document.getElementById("main-content");
->>>>>>> 6a2b340159cecfd1cebe9c596153ea7c505c3f25
+
 
 let link = document.createElement('link');
 link.rel = 'stylesheet';
 link.href = './assets/styles/import_export.css';
 document.head.appendChild(link);
 
-  
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-  // Usage
-  
-=======
-
-function renderTeacherView(callback) {
-=======
 
 function renderTeacherView(callback) {
    const content = `
@@ -57,7 +43,6 @@ function renderTeacherView(callback) {
 }
 
 function renderManageAssessments() {
->>>>>>> 6a2b340159cecfd1cebe9c596153ea7c505c3f25
     const content = `
  
      <a href="pq.html">
