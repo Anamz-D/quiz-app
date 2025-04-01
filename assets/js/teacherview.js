@@ -90,7 +90,7 @@ function renderManageAssessments() {
  }
 
 
->>>>>>> Stashed changes
+
 function renderManageAssessments() {
     const assessmentsCollection = collection(db, 'assessments');
     getDocs(assessmentsCollection)
