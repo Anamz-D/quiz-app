@@ -1,5 +1,7 @@
-import { auth } from '../firebase.js';
+import { auth , db  } from '../firebase.js';
 import { signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
 
 
 const template = document.createElement("template");
@@ -100,8 +102,9 @@ button.menu-toggle {
       <i class='bx bx-menu'></i>
     </button>
     <div class="nav-links">
-        <a href="index.html">Home</a>
-        <a href="dashboard.html">Dashboard</a>
+        <a href="index.html" id="home">Home</a>
+        <a href="teacher.html" id="teacher-page" >Home</a>
+        <a href="Dashboard.html">Dashboard</a>
         <a href="sign_up.html" id="sign-up" >Sign up</a>
         <a href="log_in.html" id="log-in">Login</a>
         <button id="logout-btn"> Logout </button>
@@ -125,57 +128,71 @@ class NavBar extends HTMLElement {
         const logoutBtn = this.shadowRoot.getElementById("logout-btn");
         const signupLink = this.shadowRoot.getElementById("sign-up");
         const loginLink = this.shadowRoot.getElementById("log-in");
+        const homeLink = this.shadowRoot.getElementById("home");
+        const teacherLink = this.shadowRoot.getElementById("teacher-page");
 
         let isMenuOpen = false;
 
 
         // Check authentication status and update UI
-        const updateAuthUI = () => {
+        const updateAuthUI = async () => {
             const isAuthenticated = localStorage.getItem("user") !== null;
 
             if (isAuthenticated) {
                 // User is logged in - hide signup/login, show logout
-               signupLink.style.display = "none";
-               loginLink.style.display = "none";
-               logoutBtn.style.display = "inline-block";
+            
+                signupLink.style.display = "none";
+                loginLink.style.display = "none";
+                logoutBtn.style.display = "inline-block";
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
                 
 =======
+=======
+>>>>>>> 6a2b340159cecfd1cebe9c596153ea7c505c3f25
                 const role = localStorage.getItem("role");
 
                 if (role === "teacher") {
                     signupLink.style.display = "none";
                     loginLink.style.display = "none";
+<<<<<<< HEAD
+=======
+                    logoutBtn.style.display = "inline-block";
+>>>>>>> 6a2b340159cecfd1cebe9c596153ea7c505c3f25
                     homeLink.style.display = "none";
                     teacherLink.style.display = "inline-block";
                 } else if (role === "student") {
                     signupLink.style.display = "none";
                     loginLink.style.display = "none";
+<<<<<<< HEAD
+=======
+                    logoutBtn.style.display = "inline-block";
+>>>>>>> 6a2b340159cecfd1cebe9c596153ea7c505c3f25
                     homeLink.style.display = "inline-block";
                     teacherLink.style.display = "none";
                 }
                      
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> 6a2b340159cecfd1cebe9c596153ea7c505c3f25
             } else {
                 // User is logged out - show signup/login, hide logout
                 signupLink.style.display = "inline-block";
                 loginLink.style.display = "inline-block";
                 logoutBtn.style.display = "none";
+                teacherLink.style.display = "none";
+            
             }
+
+           
         }
         // Initial UI update
         updateAuthUI();
 
-        // TODO Modify
-        // if (localStorage.getItem("user")){
-        //     this.shadowRoot.getElementById("sign-up").style.display = "none";
-        //     this.shadowRoot.getElementById("log-in").style.display = "none";
-        // }else{
-        //     this.shadowRoot.getElementById("sign-up").style.display = "inline-block";
-        //     this.shadowRoot.getElementById("log-in").style.display = "inline-block";
-        // }
 
+    
 
         //Toggle menu Function
         function toggleMenu() {

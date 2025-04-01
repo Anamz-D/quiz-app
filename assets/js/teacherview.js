@@ -1,22 +1,63 @@
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
 import { collection ,doc, addDoc ,getDoc, getDocs , setDoc , updateDoc, deleteDoc , Timestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import {  db } from '/assets/js/firebase.js';
 const mainContent = document.getElementById("main-content");
 >>>>>>> Stashed changes
+=======
+const mainContent = document.getElementById("main-content");
+>>>>>>> 6a2b340159cecfd1cebe9c596153ea7c505c3f25
 
-    let link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = './assets/styles/import_export.css';
-    document.head.appendChild(link);
+let link = document.createElement('link');
+link.rel = 'stylesheet';
+link.href = './assets/styles/import_export.css';
+document.head.appendChild(link);
 
   
+<<<<<<< HEAD
 <<<<<<< Updated upstream
   // Usage
   
 =======
 
 function renderTeacherView(callback) {
+=======
+
+function renderTeacherView(callback) {
+   const content = `
+
+    <a href="pq.html">
+        <div class="feature-card">
+            <img src="./assets/images/menu_book.png" alt="Past Questions">
+            <h3>Past Questions</h3>
+            <p>Access a wide range/array of pq's  to take questions from</p>
+        </div>
+    </a>
+    <a id="create-assessments">
+        <div class="feature-card">
+            <img src="./assets/images/1106.jpg" alt="">
+            <h3>Create Aseesments</h3>
+            <p>Make comprehensive assesments for your students</p>
+        </div>
+    </a>
+    <a href="" id="manage-assessments" >
+        <div class="feature-card">
+            <img src="./assets/images/monitoring.png" alt="Track Progress" >
+            <h3>Manange assessments</h3>
+            <p> edit and delete assesments from the database </p>
+        </div>
+    </a>   
+   
+   `;
+    mainContent.innerHTML = content;
+    if (callback) {
+        callback();
+    }
+}
+
+function renderManageAssessments() {
+>>>>>>> 6a2b340159cecfd1cebe9c596153ea7c505c3f25
     const content = `
  
      <a href="pq.html">
@@ -113,6 +154,7 @@ function renderCreateAssessment() {
                 </div>
                 <button type="submit" class="btn">Create Assessment</button>
             </form>
+            <a href="./teacher.html"><button class="btn">Cancel</button></a>
         </div>
     `;
     mainContent.innerHTML = content;
@@ -350,3 +392,33 @@ let mockAssessments = [
     }
 ];
 
+window.addEventListener('load', function(){
+    if (window.location.pathname === '/teacher.html') {
+        renderTeacherView(function(){
+
+            const manageAssessments = document.getElementById('manage-assessments');
+            manageAssessments.addEventListener('click', function(event) {
+                
+                event.preventDefault();
+                renderManageAssessments();
+
+            });
+            const createAssessments = document.getElementById('create-assessments');
+            createAssessments.addEventListener('click', function(event) {
+                
+                event.preventDefault();
+                renderCreateAssessment();
+
+            });
+
+        });
+    }
+   
+});
+
+// Make the function globally accessible
+window.renderCreateAssessment = renderCreateAssessment;
+window.addQuestion = addQuestion;
+window.removeQuestion = removeQuestion;
+window.editAssessment = editAssessment;
+window.deleteAssessment = deleteAssessment;
