@@ -139,7 +139,24 @@ class NavBar extends HTMLElement {
                loginLink.style.display = "none";
                logoutBtn.style.display = "inline-block";
 
+<<<<<<< Updated upstream
                 
+=======
+                const role = localStorage.getItem("role");
+
+                if (role === "teacher") {
+                    signupLink.style.display = "none";
+                    loginLink.style.display = "none";
+                    homeLink.style.display = "none";
+                    teacherLink.style.display = "inline-block";
+                } else if (role === "student") {
+                    signupLink.style.display = "none";
+                    loginLink.style.display = "none";
+                    homeLink.style.display = "inline-block";
+                    teacherLink.style.display = "none";
+                }
+                     
+>>>>>>> Stashed changes
             } else {
                 // User is logged out - show signup/login, hide logout
                 signupLink.style.display = "inline-block";
