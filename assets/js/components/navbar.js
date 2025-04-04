@@ -145,38 +145,22 @@ class NavBar extends HTMLElement {
                 loginLink.style.display = "none";
                 logoutBtn.style.display = "inline-block";
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-                
-=======
-=======
->>>>>>> 6a2b340159cecfd1cebe9c596153ea7c505c3f25
                 const role = localStorage.getItem("role");
 
                 if (role === "teacher") {
                     signupLink.style.display = "none";
                     loginLink.style.display = "none";
-<<<<<<< HEAD
-=======
                     logoutBtn.style.display = "inline-block";
->>>>>>> 6a2b340159cecfd1cebe9c596153ea7c505c3f25
                     homeLink.style.display = "none";
                     teacherLink.style.display = "inline-block";
                 } else if (role === "student") {
                     signupLink.style.display = "none";
                     loginLink.style.display = "none";
-<<<<<<< HEAD
-=======
                     logoutBtn.style.display = "inline-block";
->>>>>>> 6a2b340159cecfd1cebe9c596153ea7c505c3f25
                     homeLink.style.display = "inline-block";
                     teacherLink.style.display = "none";
                 }
                      
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> 6a2b340159cecfd1cebe9c596153ea7c505c3f25
             } else {
                 // User is logged out - show signup/login, hide logout
                 signupLink.style.display = "inline-block";
