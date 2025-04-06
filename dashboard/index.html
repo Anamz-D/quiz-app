@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Teacher </title>
+    <link rel="stylesheet" href="../assets/styles/base.css">
+    <link rel="stylesheet" href="../assets/styles/dashboard.css">
+</head>
+
+<body>
+    <div id="loading-wrapper"></div>
+    <header>
+        <nav-bar></nav-bar>
+    </header>
+
+    <main class="container">
+        <div class="create-quiz">
+            <a class="base-button" role="button" href="./create.html"> + Create Quiz</a>
+        </div>
+
+
+        <h1>Available Assessments</h1>
+        <input type="text" class="search-bar" placeholder="Search assessments...">
+        <div id="assessments-container">
+
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { isTeacher } from "../assets/js/index.js";
+        import { db } from "../assets/js/firebase.js";
+
+        async function fetchAssessments() {
+            const querySnapshot = await getDocs(collection(db, "assessments"));
+            const quizzes = [];
+            querySnapshot.forEach((doc) => {
+                quizzes.push({ id: doc.id, ...doc.data() });
+            });
+            return quizzes;
+        }
+
+        async function renderAssessments() {
+            const container = document.getElementById("assessments-container");
+            container.innerHTML = "Loading...";
+
+            const quizzes = await fetchAssessments();
+
+            container.innerHTML = quizzes.map(q => `
+                <div class="quiz-card">
+                <h3>${q.title}</h3>
+                <p>${q.description}</p>
+                <div class="card-actions">
+                    <button class="edit-btn" data-id="${q.id}">Edit</button>
+                    <button class="delete-btn" data-id="${q.id}">Delete</button>
+                </div>
+                </div>
+            `).join('');
+
+            // Add button handlers
+            container.querySelectorAll('.edit-btn').forEach(btn =>
+                btn.addEventListener('click', () => handleEdit(btn.dataset.id)));
+
+            container.querySelectorAll('.delete-btn').forEach(btn =>
+                btn.addEventListener('click', () => handleDelete(btn.dataset.id)));
+        }
+
+        function handleEdit(id) {
+            window.location.href = `./update.html?id=${id}`;
+        }
+
+        async function handleDelete(id) {
+            if (confirm("Are you sure you want to delete this assessment?")) {
+                await deleteDoc(doc(db, "assessments", id));
+                renderAssessments(); // refresh the list
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const loadingWrapper = document.getElementById("loading-wrapper");
+            loadingWrapper.style.display = "block"; // Show loader by default
+
+            try {
+                await isTeacher("quiz_dashboard.html");
+
+                // If user is a teacher, hide loader and proceed
+                loadingWrapper.style.display = "none";
+                renderAssessments();
+
+            } catch (err) {
+                console.warn("Access blocked:", err.message);
+
+            }
+        });
+
+
+    </script>
+
+</body>
+
+</html>

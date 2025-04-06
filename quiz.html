@@ -217,13 +217,17 @@
         </section>
     </main>
 
-    <script>
+    <script type="module">
+        import { collection, addDoc, getDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { db } from './assets/js/firebase.js';
+
         // Global variables 
         let currentQuestion = 0;
         let score = 0;
         let selectedAnswer = null;
         let remainingTime = 210; // 3.5 minutes
         let quizData = [];
+        let correctShuffledIndex = null;
 
         // DOM elements
         const questionEl = document.getElementById('question');
@@ -237,37 +241,36 @@
         // Event listeners
         submitBtn.addEventListener('click', handleSubmit);
 
+        /// Helper functions
+
         // Decoding function for quotes and special symbols
         function decodeQuestion(question) {
             const parser = new DOMParser();
             const decodedQuestion = parser.parseFromString(question, 'text/html').documentElement.textContent;
             return decodedQuestion
         }
-
-        // Fetch quiz data
-        async function getData(category) {
-            const url = new URL("https://opentdb.com/api.php");
-            url.searchParams.append("amount", "10");
-            if (category) {
-                url.searchParams.append("category", category);
-                if (category === "18"){
-                    url.searchParams.append("difficulty", "hard")
-                }
-                else if (category === "19") {
-                    url.searchParams.append("difficulty", "medium")
-
-                }
+        // Step 2: Shuffle function
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
             }
+            return array;
+        }
 
+        // fetch quiz question from firebase
+        async function getFirebaseQuizById(id) {
             try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`Response status: ${response.status}`);
+                const docRef = doc(db, "assessments", id);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    console.log("Document data:", docSnap.data());
+                    return docSnap.data();
+                } else {
+                    console.log("No such document!");
                 }
-                const quizJSON = await response.json();
-                return quizJSON.results; // Return the quiz data
             } catch (error) {
-                console.error(`Error fetching quiz data: ${error.message}`);
+                console.error("Error fetching quiz from Firebase:", error);
                 return null;
             }
         }
@@ -295,10 +298,15 @@
         async function initializeQuiz() {
             loadingEl.classList.remove('hidden'); // loading spinner
 
-            const params = new URLSearchParams(window.location.search)
-            const selectedCategory = params.get("category");
+            const params = new URLSearchParams(window.location.search);
+            const quizId = params.get("id");
+            if (quizId) { 
+                quizData = await getFirebaseQuizById(quizId);
+                if (quizData) {
+                    quizData = quizData.questions;
+                }
+            }
 
-            quizData = await getData(selectedCategory); // Get quiz questions and answer
             loadingEl.classList.add("hidden");
 
             if (quizData && quizData.length > 0) {
@@ -312,21 +320,27 @@
         // Display the current question
         function displayQuestion() {
             const current = quizData[currentQuestion];
-            const currentOptions = [...current.incorrect_answers, current.correct_answer];
-
-            // Shuffle options
-            currentOptions.sort(() => Math.random() - 0.5);
 
             // Update question and options
             document.getElementById("current-question").textContent = `Question ${currentQuestion + 1} / ${quizData.length}`;
-            questionEl.innerText = decodeQuestion(current.question);
+            questionEl.innerText = decodeQuestion(current.questionText);
 
-            optionsEl.innerHTML = currentOptions.map((option, index) => `
+            // Step 1: Filter + Pair options with original index
+            const availableOptions = current.options
+                .map((option, index) => ({ option, index }))
+                .filter(({ option }) => option && option.trim() !== '');
+
+            // Step 3: Shuffle the options
+            const shuffledOptions = shuffle(availableOptions);
+
+            optionsEl.innerHTML = shuffledOptions.map(({ option }, i) => `
                 <div class="option">
-                    <input type="radio" name="quiz" id="option${index}" value="${option}">
-                    <label for="option${index}">${option}</label>
+                    <input type="radio" name="quiz" id="option${i}" value="${i}">
+                    <label for="option${i}">${option}</label>
                 </div>
-            `).join('');
+                `).join('');
+
+            correctShuffledIndex = shuffledOptions.findIndex(opt => opt.index === current.correctAnswer);
 
             // Add event listeners to options
             const options = document.querySelectorAll('.option');
@@ -352,6 +366,7 @@
                     <div class="score">Score: ${score}/${quizData.length}</div>
                     <p>You got ${percentage.toFixed(2)}% of the questions correct!</p>
                     <button class="button" onclick="location.reload()">Restart Quiz</button>
+                    <button class="button" style="margin-top:10px;" onclick="location.href='/assesment.html'"> Go home </button>
                 </div>
             `;
             progressEl.style.width = '100%';
@@ -359,12 +374,16 @@
 
         // Handle answer submission
         function handleSubmit() {
-            if (selectedAnswer === quizData[currentQuestion].correct_answer) {
+            const question = quizData[currentQuestion];
+            const selectedIndex = parseInt(selectedAnswer, 10);
+
+            if (selectedIndex === correctShuffledIndex) {
                 score++;
             }
 
             currentQuestion++;
             selectedAnswer = null;
+            correctShuffledIndex = null;
             submitBtn.disabled = true;
 
             if (currentQuestion < quizData.length) {
@@ -373,6 +392,7 @@
                 showResults();
             }
         }
+
 
         // Start the quiz
         initializeQuiz();

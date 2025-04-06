@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Assesment System</title>
-    <link rel="stylesheet" href="./assets/styles/base.css">
-    <link rel="stylesheet" href="./assets/styles/assesment.css">
-  </head>
-  <body>
-    <div id="loading-wrapper"></div>
-    <header>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Assesment System</title>
+  <link rel="stylesheet" href="./assets/styles/base.css">
+  <link rel="stylesheet" href="./assets/styles/assesment.css">
+</head>
+
+<body>
+  <div id="loading-wrapper"></div>
+  <header>
     <nav-bar></nav-bar>
   </header>
   <main class="container">
     <h1>Available Assessments</h1>
     <input type="text" class="search-bar" placeholder="Search assessments...">
-    <div class="assessments">
+    <div class="assessments" id="assessments-container">
       <div class="assessment-card">
         <h3>CSC's</h3>
         <p>Mid Term Test</p>
@@ -66,21 +68,59 @@
       </table>
     </div> -->
   </main>
-  
+
   <script type="module">
-    import isAuthenticated from "./assets/js/index.js";
-    
-    const isActive = localStorage.getItem("isActive");
-    if(isActive){
-      document.getElementById("loading-wrapper").style.display = "none";
-    } else {
-      document.getElementById("loading-wrapper").style.display = "block";
+    import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { db } from "../assets/js/firebase.js";
+    import { isAuthenticated } from "./assets/js/index.js";
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const loadingWrapper = document.getElementById("loading-wrapper");
+      loadingWrapper.style.display = "block"; // Show loader by default
+
+      try {
+        await isAuthenticated();
+        console.log("User is authenticated"); 
+        loadingWrapper.style.display = "none";
+        renderAssessments();
+
+      } catch (err) {
+        console.warn("Access blocked:", err.message);
+
+      }
+    });
+
+
+    async function fetchAssessments() {
+      const querySnapshot = await getDocs(collection(db, "assessments"));
+      const quizzes = [];
+      querySnapshot.forEach((doc) => {
+        quizzes.push({ id: doc.id, ...doc.data() });
+      });
+      return quizzes;
     }
-    isAuthenticated();
-    // isAuthenticated(`assesment.html`) if dynamic router was used on every page 
+
+    async function renderAssessments() {
+      const container = document.getElementById("assessments-container");
+      container.innerHTML = "Loading...";
+
+      const quizzes = await fetchAssessments();
+      console.log(quizzes);
+      
+
+      container.innerHTML = quizzes.map(q => `
+          <div class="assessment-card">
+            <h3>${q.title}</h3>
+            <p>${q.description}</p>
+            <a href="/quiz.html?id=${q.id}" class="assessment-btn">Start Assessment</a>
+          </div>
+        `).join('');
+
+    }
 
 
   </script>
 
 </body>
+
 </html>

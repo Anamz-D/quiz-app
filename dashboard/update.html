@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <nav-bar></nav-bar>
+    <div>
+        <label for="title">Quiz Title</label>
+        <input type="text" id="title" required />
+    </div>
+    <div>
+        <label for="description">Description (optional)</label>
+        <textarea id="description" rows="3"></textarea>
+    </div>
+    <question-form></question-form>
+    <question-list></question-list>
+
+    <button id="saveQuizBtn">Save Quiz</button>
+
+
+    <script type="module" src="../assets/js/index.js"></script>
+    <script type="module">
+        import { collection, getDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { db } from '../assets/js/firebase.js';
+        import { isTeacher } from '../assets/js/index.js';
+      
+
+        let quizData = { title: '', description: '', questions: [] };
+        const questionForm = document.querySelector('question-form');
+        const questionList = document.querySelector('question-list');
+
+        let editingQuestionId = null;
+
+        /* Start Update specific logic */
+
+        const params = new URLSearchParams(window.location.search);
+        const quizId = params.get('id');
+        let quizRef = null;
+
+
+        async function fetchQuiz(quizId) {
+            try {
+                quizRef = doc(db, 'assessments', quizId);
+                const quizSnap = await getDoc(quizRef);
+
+                if (!quizSnap.exists()) {
+                    alert('Quiz not found');
+                    window.location.href = './index.html'; 
+                    return;
+                }
+
+                quizData = quizSnap.data();
+
+                // Set form fields
+                document.getElementById('title').value = quizData.title;
+                document.getElementById('description').value = quizData.description;
+
+                // Set questions in the question-list component
+                const questionList = document.querySelector('question-list');
+                questionList.data = quizData.questions || [];
+
+                // Optionally store quiz ID somewhere if you plan to update
+                window.currentQuizId = quizId;
+
+            } catch (err) {
+                console.error('Error fetching quiz:', err);
+                alert('Failed to load quiz.');
+                window.location.href = './index.html';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await isTeacher();
+            if (quizId) {
+                fetchQuiz(quizId);
+            } else {
+                alert('No quiz ID provided in URL');
+                window.location.href = './index.html';
+
+            }
+        });
+
+        /* End Update specific logic */
+
+
+        // event listeners for title and description
+        ['title', 'description'].forEach(id => {
+            const input = document.getElementById(id);
+            input.addEventListener('blur', () => {
+                quizData[id] = input.value;
+            });
+        });
+
+        document.addEventListener('question-submit', (e) => {
+            const newQuestion = e.detail;
+
+            if (editingQuestionId) {
+                console.log('question-updated', e.detail);
+                const index = quizData.questions.findIndex(q => q.id === editingQuestionId);
+                console.log(index)
+                quizData.questions[index] = newQuestion;
+                editingQuestionId = null;
+            } else {
+                console.log('question-added', e.detail);
+                quizData.questions.push(newQuestion);
+            }
+
+            questionList.data = quizData.questions;
+        });
+
+        document.addEventListener('question-edit', (e) => {
+            editingQuestionId = e.detail.id;
+            questionForm.question = e.detail;
+
+        });
+
+        document.addEventListener('question-delete', (e) => {
+            const id = e.detail;
+            quizData.questions = quizData.questions.filter(q => q.id !== id);
+            questionList.data = quizData.questions;
+        });
+
+        // Save quiz data to Firestore
+        document.getElementById('saveQuizBtn').addEventListener('click', async () => {
+            console.log('quizData', quizData);
+            
+            if (!quizData.title || quizData.questions.length === 0) {
+                alert('Please provide a title, description, and at least one question.');
+                return;
+            }
+
+            try {
+                await updateDoc(quizRef, {
+                    title: quizData.title,
+                    description: quizData.description,
+                    questions: quizData.questions,
+                    createdAt: new Date()
+                });
+
+                console.log('Quiz updated successfully!');
+                quizData.title = '';
+                quizData.description = '';
+                quizData.questions = [];
+                questionList.data = [];
+                questionForm.reset(); 
+                window.location.href = './index.html';
+
+            } catch (error) {
+                console.error('Error updating quiz:', error);
+                alert('Failed to update quiz. Please try again.');
+            }
+        });
+
+
+    </script>
+
+
+
+</body>
+
+
+</html>

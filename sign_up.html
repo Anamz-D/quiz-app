@@ -48,13 +48,23 @@
 
         const signupForm = document.getElementById("signup-form");
 
-        function register(email, password) {
-            createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
+        async function register(email, password, fullName) {
+            await createUserWithEmailAndPassword(auth, email, password)
+                .then(async (userCredential) => {
                     // Signed up 
                     const user = userCredential.user;
-                    localStorage.setItem("user", user)
-                    window.location.href = "/log_in.html"; //carry user to log in page 
+
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDocData = (await getDoc(userDocRef)).data();
+
+                    // Store user information in Firestore
+                    await setDoc(doc(db, "users", user.uid), {
+                        fullName: fullName,
+                        email: email,
+                        role: "student",
+                        createdAt: serverTimestamp()
+                    });
+
                 })
                 .catch((error) => {
                     const errorCode = error.code;
@@ -66,20 +76,20 @@
         signupForm.addEventListener("submit", function (event) {
             event.preventDefault();
             console.log("Form Submitted");
-            
+
             const formData = new FormData(event.target);
 
             const fullName = formData.get("fullname");
             const signupEmail = formData.get("email");
             const signupPassword = formData.get("password");
             const confirmPassword = formData.get("confirm_password");
-            
-            if (signupPassword === confirmPassword) {                
-                register(signupEmail, signupPassword);
+
+            if (signupPassword === confirmPassword) {
+                register(signupEmail, signupPassword, fullName);
             } else {
                 alert("passwords do not match");
             }
-            
+
         })
 
 

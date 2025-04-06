@@ -1,6 +1,5 @@
-import { auth } from '../firebase.js';
+import { auth } from "../firebase.js";
 import { signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
 
 const template = document.createElement("template");
 template.innerHTML = /*html*/ `
@@ -100,102 +99,92 @@ button.menu-toggle {
       <i class='bx bx-menu'></i>
     </button>
     <div class="nav-links">
-        <a href="index.html">Home</a>
-        <a href="assesment.html">Assessments</a>
-        <a href="sign_up.html" id="sign-up" >Sign up</a>
-        <a href="log_in.html" id="log-in">Login</a>
+        <a href="/">Home</a>
+        <a href="/assesment.html">Assessments</a>
+        <a href="/sign_up.html" id="sign-up" >Sign up</a>
+        <a href="/log_in.html" id="log-in">Login</a>
         <button id="logout-btn"> Logout </button>
     </div> 
         
 </nav>
-`
+`;
 
 class NavBar extends HTMLElement {
-    constructor() {
-        super();
-        this.isMenuOpen = false;
+  constructor() {
+    super();
+    this.isMenuOpen = false;
 
-        const shadowRoot = this.attachShadow({ mode: "open" });
-        shadowRoot.appendChild(template.content.cloneNode(true));
+    const shadowRoot = this.attachShadow({ mode: "open" });
+    shadowRoot.appendChild(template.content.cloneNode(true));
+  }
+
+  connectedCallback() {
+    const menuToggleBtn = this.shadowRoot.getElementById("menu-toggle");
+    const menuItems = this.shadowRoot.querySelector(".nav-links");
+    const logoutBtn = this.shadowRoot.getElementById("logout-btn");
+    const signupLink = this.shadowRoot.getElementById("sign-up");
+    const loginLink = this.shadowRoot.getElementById("log-in");
+
+    let isMenuOpen = false;
+
+    const updateAuthUI = () => {
+      const userData = localStorage.getItem("user");
+      const isAuthenticated = userData !== null;
+
+      if (isAuthenticated) {
+        // Parse the user data
+        const user = JSON.parse(userData);
+
+        // Hide signup/login, show logout
+        signupLink.style.display = "none";
+        loginLink.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+
+        // Add dashboard link if user is a teacher
+        if (user.role === "teacher" && !this.shadowRoot.getElementById("dashboard-link")) {
+          const dashboardLink = document.createElement("a");
+          dashboardLink.href = "/dashboard";
+          dashboardLink.textContent = "Dashboard";
+          dashboardLink.id = "dashboard-link";
+          dashboardLink.style.marginRight = "15px";
+
+          // Insert before logout button
+          menuItems.insertBefore(dashboardLink, logoutBtn);
+        }
+
+      } else {
+        // Show signup/login, hide logout and dashboard
+        signupLink.style.display = "inline-block";
+        loginLink.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+
+        const dashboardLink = this.shadowRoot.getElementById("dashboard-link");
+        if (dashboardLink) dashboardLink.remove();
+      }
+    };
+
+    // Initial UI update
+    updateAuthUI();
+
+    function toggleMenu() {
+      isMenuOpen = !isMenuOpen;
+      menuItems.style.transform = isMenuOpen ? "translatey(0)" : "translatey(-1000px)";
     }
 
-    connectedCallback() {
-        const menuToggleBtn = this.shadowRoot.getElementById("menu-toggle");
-        const menuItems = this.shadowRoot.querySelector(".nav-links");
-        const logoutBtn = this.shadowRoot.getElementById("logout-btn");
-        const signupLink = this.shadowRoot.getElementById("sign-up");
-        const loginLink = this.shadowRoot.getElementById("log-in");
+    logoutBtn.addEventListener("click", function () {
+      signOut(auth)
+        .then(() => {
+          localStorage.removeItem("user");
+          updateAuthUI();
+          window.location.href = "/";
+        })
+        .catch((error) => {
+          console.error("Logout error:", error);
+        });
+    });
 
-        let isMenuOpen = false;
-
-
-        // Check authentication status and update UI
-        const updateAuthUI = () => {
-            const isAuthenticated = localStorage.getItem("user") !== null;
-
-            if (isAuthenticated) {
-                // User is logged in - hide signup/login, show logout
-               signupLink.style.display = "none";
-               loginLink.style.display = "none";
-               logoutBtn.style.display = "inline-block";
-
-                
-            } else {
-                // User is logged out - show signup/login, hide logout
-                signupLink.style.display = "inline-block";
-                loginLink.style.display = "inline-block";
-                logoutBtn.style.display = "none";
-            }
-        }
-        // Initial UI update
-        updateAuthUI();
-
-        // TODO Modify
-        // if (localStorage.getItem("user")){
-        //     this.shadowRoot.getElementById("sign-up").style.display = "none";
-        //     this.shadowRoot.getElementById("log-in").style.display = "none";
-        // }else{
-        //     this.shadowRoot.getElementById("sign-up").style.display = "inline-block";
-        //     this.shadowRoot.getElementById("log-in").style.display = "inline-block";
-        // }
-
-
-        //Toggle menu Function
-        function toggleMenu() {
-            isMenuOpen = !isMenuOpen;
-            if (isMenuOpen === true) {
-                // menuItems.style.display = "flex";  
-                menuItems.style.transform = "translatey(0)";
-            }
-            else { menuItems.style.transform = "translatey(-1000px)"; }
-        }
-        //logout handler
-        
-        logoutBtn.addEventListener(
-            "click", function () {
-                signOut(auth).then(() => {
-                    // Sign-out successful.
-                    // Clear user data from localStorage
-                  localStorage.removeItem("user");
-                  // Update UI after logout
-                   updateAuthUI();
-                 // Optional: Redirect to home page
-                  window.location.href = "/";
-
-                }).catch((error) => {
-                    // An error happened.
-                    console.error("Logout error:", error)
-                })
-
-            }
-        )
-        
-
-        menuToggleBtn.addEventListener(
-            "click", toggleMenu
-        )
-
-    }
+    menuToggleBtn.addEventListener("click", toggleMenu);
+}
 
 }
 

@@ -1,29 +1,61 @@
 import NavBar from "./components/navbar.js";
-import { auth } from './firebase.js';
+import QuestionForm from "./components/questionForm.js";
+import QuestionList from "./components/questionList.js";
 
+import { auth, db } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import {
+  doc,
+  getDoc,
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-window.customElements.define("nav-bar", NavBar)
+// define components
+window.customElements.define("nav-bar", NavBar);
+window.customElements.define("question-form", QuestionForm);
+window.customElements.define("question-list", QuestionList);
 
-
-function isAuthenticated(from) {
-    // if ture 
-    // else redirect to login 
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // User is signed in, see docs for a list of available properties
-            // https://firebase.google.com/docs/reference/js/auth.user
-            const uid = user.uid;
-            localStorage.setItem("isActive", true)
-            // ...
-        } else {
-            // User is signed out
-            // ...   
-            localStorage.setItem("isActive", false)
-            window.location.href = `/log_in.html?from=assesment.html`;
-            // window.location.href = `/log_in.html?from=${from}`; //For dynamic router To work on every page 
-        }
-    });
+async function getUserData(uid) {
+  const userDoc = await getDoc(doc(db, "users", uid));
+  if (userDoc.exists()) {
+    return userDoc.data();
+  } else {
+    throw new Error("User record not found");
+  }
 }
 
-export default isAuthenticated;
+async function isAuthenticated(from = "index.html") {
+  return new Promise((resolve, reject) => {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const firestoreUser = await getUserData(user.uid);
+        const userData = {
+          uid: user.uid,
+          email: user.email,
+          role: firestoreUser.role || "student",
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+        resolve(userData);
+      } else {
+        localStorage.removeItem("user");
+        window.location.href = `/log_in.html?from=${from}`;
+        reject(new Error("User not authenticated"));
+      }
+    });
+  });
+}
+
+async function isTeacher(from = "index.html") {
+  try {
+    const user = await isAuthenticated(from);
+
+    if (user.role === "teacher") {
+      return user;
+    } else {
+      window.location.href = "/";
+      throw new Error("User is not a teacher");
+    }
+  } catch (err) {
+    throw err;
+  }
+}
+export { isAuthenticated, isTeacher };
