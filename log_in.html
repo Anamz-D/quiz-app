@@ -52,11 +52,11 @@
     <script type="module">
         import { auth } from './assets/js/firebase.js';
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
+        import { getUserData } from './assets/js/index.js';
 
         const loginForm = document.getElementById("login-form")
 
-        loginForm.addEventListener("submit", function (event) {
+        loginForm.addEventListener("submit",function (event) {
 
             event.preventDefault();
             const loginBtn = document.getElementById("login-btn");
@@ -68,10 +68,10 @@
             const signinPassword = document.getElementById("login-password").value;
 
             signInWithEmailAndPassword(auth, signinEmail, signinPassword)
-                .then((userCredential) => {
+                .then( async (userCredential) => {
                     // Signed in 
                     const user = userCredential.user;
-                    localStorage.setItem("user", JSON.stringify(user));
+                    await getUserData(user.uid);
 
                     // Redirect user to last page visited
                     const params = new URLSearchParams(window.location.search)
@@ -84,7 +84,7 @@
                 .catch((error) => {
                     const errorCode = error.code;
                     const errorMessage = error.message;
-                    console.log(errorCode)
+                    console.error(errorCode)
 
                     const alert = document.querySelector("#alert");
                     const alertMsg = document.getElementById("err-msg");

@@ -17,7 +17,15 @@ window.customElements.define("question-list", QuestionList);
 async function getUserData(uid) {
   const userDoc = await getDoc(doc(db, "users", uid));
   if (userDoc.exists()) {
-    return userDoc.data();
+    const userData = userDoc.data();
+    const localUserData = {
+        uid: uid,
+        email: userData.email,
+        role: userData.role || "student",
+        ...userData
+      };
+      localStorage.setItem("user", JSON.stringify(localUserData));
+      return localUserData
   } else {
     throw new Error("User record not found");
   }
@@ -27,13 +35,7 @@ async function isAuthenticated(from = "index.html") {
   return new Promise((resolve, reject) => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const firestoreUser = await getUserData(user.uid);
-        const userData = {
-          uid: user.uid,
-          email: user.email,
-          role: firestoreUser.role || "student",
-        };
-        localStorage.setItem("user", JSON.stringify(userData));
+        const userData = await getUserData(user.uid);
         resolve(userData);
       } else {
         localStorage.removeItem("user");
@@ -58,4 +60,4 @@ async function isTeacher(from = "index.html") {
     throw err;
   }
 }
-export { isAuthenticated, isTeacher };
+export { isAuthenticated, isTeacher, getUserData };

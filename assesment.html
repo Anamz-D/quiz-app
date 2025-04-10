@@ -80,7 +80,6 @@
 
       try {
         await isAuthenticated();
-        console.log("User is authenticated"); 
         loadingWrapper.style.display = "none";
         renderAssessments();
 
@@ -105,7 +104,6 @@
       container.innerHTML = "Loading...";
 
       const quizzes = await fetchAssessments();
-      console.log(quizzes);
       
 
       container.innerHTML = quizzes.map(q => `

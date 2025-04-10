@@ -40,7 +40,9 @@ template.innerHTML = /*html*/ `
 .nav-links a:hover {
     text-decoration: underline;
 }
-
+.nav-links #dashboard-link{
+  display: none;
+}
 button.menu-toggle {
     all: unset;
     display: none;
@@ -102,6 +104,7 @@ button.menu-toggle {
         <a href="/">Home</a>
         <a href="/assesment.html">Assessments</a>
         <a href="/sign_up.html" id="sign-up" >Sign up</a>
+        <a href="/dashboard" id="dashboard-link" >Dashboard</a>
         <a href="/log_in.html" id="log-in">Login</a>
         <button id="logout-btn"> Logout </button>
     </div> 
@@ -124,6 +127,7 @@ class NavBar extends HTMLElement {
     const logoutBtn = this.shadowRoot.getElementById("logout-btn");
     const signupLink = this.shadowRoot.getElementById("sign-up");
     const loginLink = this.shadowRoot.getElementById("log-in");
+    const dashboardLink = this.shadowRoot.getElementById("dashboard-link");
 
     let isMenuOpen = false;
 
@@ -141,15 +145,8 @@ class NavBar extends HTMLElement {
         logoutBtn.style.display = "inline-block";
 
         // Add dashboard link if user is a teacher
-        if (user.role === "teacher" && !this.shadowRoot.getElementById("dashboard-link")) {
-          const dashboardLink = document.createElement("a");
-          dashboardLink.href = "/dashboard";
-          dashboardLink.textContent = "Dashboard";
-          dashboardLink.id = "dashboard-link";
-          dashboardLink.style.marginRight = "15px";
-
-          // Insert before logout button
-          menuItems.insertBefore(dashboardLink, logoutBtn);
+        if (user.role === "teacher" ) {
+          dashboardLink.style.display = "flex";
         }
 
       } else {
@@ -157,9 +154,6 @@ class NavBar extends HTMLElement {
         signupLink.style.display = "inline-block";
         loginLink.style.display = "inline-block";
         logoutBtn.style.display = "none";
-
-        const dashboardLink = this.shadowRoot.getElementById("dashboard-link");
-        if (dashboardLink) dashboardLink.remove();
       }
     };
 

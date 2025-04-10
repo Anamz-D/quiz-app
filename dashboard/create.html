@@ -4,7 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dashboard</title>
+    <script type="module" src="../assets/js/index.js" async defer></script>
+    <link rel="stylesheet" href="../assets/styles/base.css">
+
+
 </head>
 
 <body>
@@ -23,7 +27,6 @@
     <button id="saveQuizBtn">Save Quiz</button>
 
 
-    <script type="module" src="../assets/js/index.js"></script>
     <script type="module">
         import { collection, addDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { db } from '../assets/js/firebase.js';
@@ -51,13 +54,10 @@
             const newQuestion = e.detail;
 
             if (editingQuestionId) {
-                console.log('question-updated', e.detail);
                 const index = quizData.questions.findIndex(q => q.id === editingQuestionId);
-                console.log(index)
                 quizData.questions[index] = newQuestion;
                 editingQuestionId = null;
             } else {
-                console.log('question-added', e.detail);
                 quizData.questions.push(newQuestion);
             }
 
