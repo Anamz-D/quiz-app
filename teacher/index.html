@@ -21,7 +21,7 @@
         </div>
 
 
-        <h1>Available Assessments</h1>
+        <h1>Manage Assessments</h1>
         <input type="text" class="search-bar" placeholder="Search assessments...">
         <div id="assessments-container">
 
@@ -84,7 +84,7 @@
             loadingWrapper.style.display = "block"; // Show loader by default
 
             try {
-                await isTeacher("quiz_dashboard.html");
+                await isTeacher();
 
                 // If user is a teacher, hide loader and proceed
                 loadingWrapper.style.display = "none";

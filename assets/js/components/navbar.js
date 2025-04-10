@@ -40,7 +40,7 @@ template.innerHTML = /*html*/ `
 .nav-links a:hover {
     text-decoration: underline;
 }
-.nav-links #dashboard-link{
+.nav-links #teacher-link{
   display: none;
 }
 button.menu-toggle {
@@ -103,8 +103,9 @@ button.menu-toggle {
     <div class="nav-links">
         <a href="/">Home</a>
         <a href="/assesment.html">Assessments</a>
+        <a href="/profilepage.html">Dashboard</a>
         <a href="/sign_up.html" id="sign-up" >Sign up</a>
-        <a href="/dashboard" id="dashboard-link" >Dashboard</a>
+        <a href="/teacher" id="teacher-link" >Teacher Dash</a>
         <a href="/log_in.html" id="log-in">Login</a>
         <button id="logout-btn"> Logout </button>
     </div> 
@@ -127,7 +128,7 @@ class NavBar extends HTMLElement {
     const logoutBtn = this.shadowRoot.getElementById("logout-btn");
     const signupLink = this.shadowRoot.getElementById("sign-up");
     const loginLink = this.shadowRoot.getElementById("log-in");
-    const dashboardLink = this.shadowRoot.getElementById("dashboard-link");
+    const teacherLink = this.shadowRoot.getElementById("teacher-link");
 
     let isMenuOpen = false;
 
@@ -146,7 +147,7 @@ class NavBar extends HTMLElement {
 
         // Add dashboard link if user is a teacher
         if (user.role === "teacher" ) {
-          dashboardLink.style.display = "flex";
+          teacherLink.style.display = "inline-block";
         }
 
       } else {

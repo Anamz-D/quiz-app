@@ -49,9 +49,11 @@ section {
 }
 
 .features {
-    display: flex;
+    display: grid;
     justify-content: space-evenly;
     /* grid-template-columns: 1fr; */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    
     gap: 1rem;
     margin-bottom: 3rem;
     padding: 7px;
@@ -154,6 +156,7 @@ li a:hover {
 @media (max-width: 768px) {
 
     .features {
+        display: flex;
         /* grid-template-columns: repeat(3, 1fr); */
         flex-direction: column;
     }

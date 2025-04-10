@@ -14,6 +14,45 @@
 
 <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
 
+<style>
+    .features a:not(#past-questions) {
+        display: none;
+    }
+
+
+    .loading-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .spinner-border {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+</style>
+
 <body>
     <header>
         <nav-bar></nav-bar>
@@ -24,34 +63,53 @@
         <option value="dark">darkmode</option>
     </select> -->
     <section>
+        <div id="loading-animation" class="loading-animation">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
         <div class="s1-intro">
             <h2>Welcome to Encore-Education</h2>
             <p>Your go-to platform for online assessments based on past questions</p>
         </div>
 
         <main class="features">
-            <a href="pq.html">
+            <a href="pq.html" id="past-questions">
                 <div class="feature-card">
                     <img src="./assets/images/menu_book.png" alt="Past Questions">
                     <h3>Past Questions</h3>
                     <p>Access a wide range of past questions to practice and improve your skills</p>
                 </div>
             </a>
-            <a href="assesment.html">
+            <a href="/dashboard/create.html" id="create-assesment">
                 <div class="feature-card">
-                    <img src="assets/images/check_box.png" alt="Take Assessments">
-                    <h3>Take Assessments</h3>
+                    <img src="./assets/images/1106.jpg" alt="">
+                    <h3>Create Aseesments</h3>
+                    <p>Make comprehensive assesments for your students</p>
+                </div>
+            </a>
+            <a href="/dashboard" id="manage-assesment" >
+                <div class="feature-card">
+                    <img src="./assets/images/monitoring.png" alt="Track Progress" >
+                    <h3>Manange assessments</h3>
+                    <p> edit and delete assesments from the database </p>
+                </div>
+            </a>   
+            <a href="assesment.html" id="take-assesment" >
+                <div class="feature-card">
+                    <img src="./assets/images/monitoring.png" alt="Track Progress" >
+                    <h3>Take assessments</h3>
+                    <p>Challenge yourself with assessments made by your tutors</p>
+                </div>
+            </a>   
+            <a href="random_assesment.html" id="random-assesment" >
+                <div class="feature-card">
+                    <img src="./assets/images/monitoring.png" alt="Track Progress" >
+                    <h3>Take random assessments</h3>
                     <p>Challenge yourself with assessments to gauge your knowledge</p>
                 </div>
-            </a>
-            <a href="progress.html">
-                <div class="feature-card">
-                    <img src="assets/images/monitoring.png" alt="Track Progress" >
-                    <h3>Track Progress</h3>
-                    <p>Monitor your performance and see your improvement over time</p>
-                </div>
-            </a>
-
+            </a>   
         </main>
 
         <!-- <div class="cta">
@@ -70,7 +128,68 @@
         <p>&copy; 2024 Encore Education. All rights reserved.</p>
     </footer>
 
+    <script type="module">
+        // check the user role
+        // show / hide the cards based on role
 
+        import { getUserData } from "./assets/js/index.js";
+        const user = JSON.parse( localStorage.getItem("user"));
+
+        const loadingAnimation = document.getElementById('loading-animation');
+
+        // Show the loading animation when the dashboard is loading
+        function showLoadingAnimation() {
+            loadingAnimation.style.display = 'flex';
+        }
+
+        // Hide the loading animation when the dashboard is loaded
+        function hideLoadingAnimation() {
+            loadingAnimation.style.display = 'none';
+        }
+
+
+        showLoadingAnimation();
+
+
+        if (user){
+
+            const createAssesment = document.getElementById("create-assesment");
+            const manageAssesment = document.getElementById("manage-assesment");
+            const takeAssesment = document.getElementById("take-assesment");
+            const randomAssesment = document.getElementById("random-assesment");
+
+
+            
+           
+            const userData = await getUserData(user.uid);
+            if (user)
+
+            if (userData.role === "student") {
+                createAssesment.style.display = "none";
+                manageAssesment.style.display = "none";
+                takeAssesment.style.display = "block";
+                randomAssesment.style.display = "block";
+
+            }
+            else if (userData.role === "teacher") {
+                createAssesment.style.display = "block";
+                manageAssesment.style.display = "block";
+                takeAssesment.style.display = "none";
+                randomAssesment.style.display = "none";
+            }
+            else {
+                console.warn("user is not logged in")
+                
+            }
+
+        }
+        
+        hideLoadingAnimation();
+    
+
+ 
+
+    </script>
 
 </body>
 
