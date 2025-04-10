@@ -29,7 +29,8 @@
 
 
                 <!-- <label for="signup-confirm-password">Confirm Password</label> -->
-                <input type="password" id="confirm_password" name="confirm_password" placeholder=" confirm Password" required><br>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder=" confirm Password"
+                    required><br>
 
                 <div class="profile-upload">
                     <label for="profile-picture">Profile Picture (Optional)</label>
@@ -49,78 +50,56 @@
         </div>
     </main>
 
-    <script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript">  
+    <script src="https://upload-widget.cloudinary.com/latest/global/all.js" type="text/javascript">
     </script>
 
-<!-- <script type="text/javascript">  
-    let profilePictureUrl = null;
+    <script type="text/javascript">
+        let profilePictureUrl = null;
 
-    
-    var myWidget = cloudinary.createUploadWidget({
-      cloudName: 'dkf6wuffq', 
-      uploadPreset: 'encore'}, (error, result) => { 
-        if (!error && result && result.event === "success") { 
-          console.log('Done! Here is the image info: ', result.info); 
-          profilePictureUrl = result.info.secure_url;
+
+        var myWidget = cloudinary.createUploadWidget({
+            cloudName: 'dkf6wuffq',
+            uploadPreset: 'encore'
+        }, (error, result) => {
+            if (!error && result && result.event === "success") {
+                console.log('Done! Here is the image info: ', result.info);
+                profilePictureUrl = result.info.secure_url;
+            }
         }
-      }
-    )
-    
-    document.getElementById("upload_widget").addEventListener("click", function(){
-        myWidget.open();
-      }, false);
-    </script> -->
+        )
+
+        document.getElementById("upload_widget").addEventListener("click", function () {
+            myWidget.open();
+        }, false);
+    </script>
 
     <script type="module">
-        import { auth } from './assets/js/firebase.js';
+        import { auth, db } from './assets/js/firebase.js';
         import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { uploadToCloudinary } from './assets/js/cloudinary.js';
+        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         const signupForm = document.getElementById("signup-form");
-        const profilePicture = document.getElementById("profile-picture");
-        const profilePreview = document.getElementById("profile-preview");
-
-        // Preview profile picture
-        profilePicture.addEventListener("change", function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    profilePreview.innerHTML = `<img src="${e.target.result}" style="max-width: 100px; max-height: 100px; border-radius: 50%; object-fit: cover;">`;
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
 
         async function register(email, password, fullName) {
-            await createUserWithEmailAndPassword(auth, email, password)
+            createUserWithEmailAndPassword(auth, email, password)
                 .then(async (userCredential) => {
                     // Signed up 
                     const user = userCredential.user;
-
-                    const userDocRef = doc(db, "users", user.uid);
-                    const userDocData = (await getDoc(userDocRef)).data();
-
-                    // Upload profile picture if provided
-                    // if (profilePictureFile) {
-                    //     profilePictureUrl = await uploadToCloudinary(profilePictureFile, `profile_pictures/${user.uid}`);
-                    // }
 
                     // Store user information in Firestore
                     await setDoc(doc(db, "users", user.uid), {
                         fullName: fullName,
                         email: email,
                         role: "student",
-                        profilePicture: profilePictureUrl,
-                        createdAt: serverTimestamp()
+                        profilePicture: profilePictureUrl
                     });
+                    window.location.href = "log_in.html";
 
                 })
                 .catch((error) => {
                     const errorCode = error.code;
                     const errorMessage = error.message;
-                    alert(errorMessage);
+                    console.error("Error signing up:", errorCode, errorMessage);
                 });
         }
 
