@@ -283,6 +283,12 @@
 
             const profileHTML = `
             <div class="profile-info">
+                <label>Profile Picture:</label>
+                <div>
+                    <img src="${data.profilePicture || 'https://via.placeholder.com/150'}" width="100" height="100" style="border-radius:50%;"/>
+                </div>
+            </div>
+            <div class="profile-info">
                 <label>Full Name:</label>
                 <span>${data.fullName || 'Not set'}</span>
             </div>

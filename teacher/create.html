@@ -21,6 +21,13 @@
         <label for="description">Description (optional)</label>
         <textarea id="description" rows="3"></textarea>
     </div>
+    <div class="profile-info">
+        <label>Profile Picture:</label>
+        <div>
+            <img src="${data.profilePicture || 'https://via.placeholder.com/150'}" width="100" height="100"
+                style="border-radius:50%;" />
+        </div>
+    </div>
     <question-form></question-form>
     <question-list></question-list>
 
@@ -31,7 +38,33 @@
         import { collection, addDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { db } from '../assets/js/firebase.js';
         import { isTeacher } from '../assets/js/index.js';
-        
+        // Cloudinary configuration
+        const cloudName = 'your-cloud-name';
+        const uploadPreset = 'your-upload-preset';
+
+        // Initialize Cloudinary widget for assessment image
+        const assessmentWidget = cloudinary.createUploadWidget({
+            cloudName: cloudName,
+            uploadPreset: uploadPreset,
+            folder: 'assessment-images',
+            multiple: false,
+            resourceType: 'image',
+            clientAllowedFormats: ['jpg', 'png', 'jpeg', 'gif'],
+            maxImageFileSize: 5000000 // 5MB
+        }, (error, result) => {
+            if (!error && result && result.event === "success") {
+                document.getElementById('assessment-image').value = result.info.secure_url;
+                document.getElementById('assessment-image-preview').innerHTML = `
+                <img src="${result.info.secure_url}" width="200" style="max-height: 200px; object-fit: contain;"/>
+            `;
+            }
+        });
+
+        document.getElementById("assessmentUploadWidget").addEventListener("click", function (e) {
+            e.preventDefault();
+            assessmentWidget.open();
+        });
+
         // Check if the user is a teacher
         window.addEventListener('DOMContentLoaded', async () => {
             await isTeacher();
@@ -78,6 +111,7 @@
 
         // Save quiz data to Firestore
         document.getElementById('saveQuizBtn').addEventListener('click', async () => {
+            quizData.imageUrl = document.getElementById('assessment-image').value;
             if (!quizData.title || quizData.questions.length === 0) {
                 alert('Please provide a title, description, and at least one question.');
                 return;
@@ -87,6 +121,7 @@
                 const docRef = await addDoc(collection(db, 'assessments'), {
                     title: quizData.title,
                     description: quizData.description,
+                    imageUrl: quizData.imageUrl,
                     questions: quizData.questions,
                     createdAt: new Date()
                 });
@@ -95,9 +130,11 @@
                 // Reset if you want
                 quizData.title = '';
                 quizData.description = '';
+                quizData.imageUrl = '';
                 quizData.questions = [];
                 questionList.data = [];
                 questionForm.reset(); // Add a reset() method to your component if needed
+                document.getElementById('assessment-image-preview').innerHTML = '';
 
             } catch (error) {
                 console.error('Error saving quiz:', error);
@@ -105,7 +142,7 @@
             }
         });
 
-        
+
 
     </script>
 
