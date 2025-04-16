@@ -7,8 +7,7 @@
     <title>Dashboard</title>
     <script type="module" src="../assets/js/index.js" async defer></script>
     <link rel="stylesheet" href="../assets/styles/base.css">
-
-
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -21,12 +20,11 @@
         <label for="description">Description (optional)</label>
         <textarea id="description" rows="3"></textarea>
     </div>
-    <div class="profile-info">
-        <label>Profile Picture:</label>
-        <div>
-            <img src="${data.profilePicture || 'https://via.placeholder.com/150'}" width="100" height="100"
-                style="border-radius:50%;" />
-        </div>
+    <div>
+        <label for="assessment-image">Assessment Image (Optional)</label>
+        <button id="assessmentUploadWidget" class="cloudinary-button">Upload Image</button>
+        <input type="hidden" id="assessment-image" name="assessment-image">
+        <div id="assessment-image-preview"></div>
     </div>
     <question-form></question-form>
     <question-list></question-list>
@@ -39,13 +37,13 @@
         import { db } from '../assets/js/firebase.js';
         import { isTeacher } from '../assets/js/index.js';
         // Cloudinary configuration
-        const cloudName = 'your-cloud-name';
-        const uploadPreset = 'your-upload-preset';
+        const cloudName = 'dkf6wuffq';
+        const uploadPreset = 'encore';
 
         // Initialize Cloudinary widget for assessment image
         const assessmentWidget = cloudinary.createUploadWidget({
-            cloudName: cloudName,
-            uploadPreset: uploadPreset,
+            cloudName: dkf6wuffq,
+            uploadPreset: encore,
             folder: 'assessment-images',
             multiple: false,
             resourceType: 'image',
@@ -69,7 +67,7 @@
         window.addEventListener('DOMContentLoaded', async () => {
             await isTeacher();
         });
-        const quizData = { title: '', description: '', questions: [] };
+        const quizData = { title: '', description: '',imageUrl: '', questions: [] };
         const questionForm = document.querySelector('question-form');
         const questionList = document.querySelector('question-list');
 
@@ -109,15 +107,59 @@
             questionList.data = quizData.questions;
         });
 
-        // Save quiz data to Firestore
+        // // Save quiz data to Firestore
+        // document.getElementById('saveQuizBtn').addEventListener('click', async () => {
+        //     quizData.imageUrl = document.getElementById('assessment-image').value;
+        //     if (!quizData.title || quizData.questions.length === 0) {
+        //         alert('Please provide a title, description, and at least one question.');
+        //         return;
+        //     }
+
+        //     try {
+        //         const docRef = await addDoc(collection(db, 'assessments'), {
+        //             title: quizData.title,
+        //             description: quizData.description,
+        //             imageUrl: quizData.imageUrl,
+        //             questions: quizData.questions,
+        //             createdAt: new Date()
+        //         });
+
+        //         alert('Quiz saved successfully! ID: ' + docRef.id);
+        //         // Reset if you want
+        //         quizData.title = '';
+        //         quizData.description = '';
+        //         quizData.imageUrl = '';
+        //         quizData.questions = [];
+        //         questionList.data = [];
+        //         questionForm.reset(); // Add a reset() method to your component if needed
+        //         document.getElementById('assessment-image-preview').innerHTML = '';
+
+        //     } catch (error) {
+        //         console.error('Error saving quiz:', error);
+        //         alert('Failed to save quiz. Please try again.');
+        //     }
+        // });
+
+        
+
+        // Update save handler
         document.getElementById('saveQuizBtn').addEventListener('click', async () => {
+            // Capture image URL
             quizData.imageUrl = document.getElementById('assessment-image').value;
-            if (!quizData.title || quizData.questions.length === 0) {
-                alert('Please provide a title, description, and at least one question.');
+            
+            // Update validation
+            if (!quizData.title.trim()) {
+                alert('Please provide a title');
+                return;
+            }
+            
+            if (quizData.questions.length === 0) {
+                alert('Please add at least one question');
                 return;
             }
 
             try {
+                // For create.html
                 const docRef = await addDoc(collection(db, 'assessments'), {
                     title: quizData.title,
                     description: quizData.description,
@@ -126,24 +168,22 @@
                     createdAt: new Date()
                 });
 
-                alert('Quiz saved successfully! ID: ' + docRef.id);
-                // Reset if you want
-                quizData.title = '';
-                quizData.description = '';
-                quizData.imageUrl = '';
-                quizData.questions = [];
-                questionList.data = [];
-                questionForm.reset(); // Add a reset() method to your component if needed
-                document.getElementById('assessment-image-preview').innerHTML = '';
+                // For update.html
+                // await updateDoc(quizRef, {
+                //     title: quizData.title,
+                //     description: quizData.description,
+                //     imageUrl: quizData.imageUrl,
+                //     questions: quizData.questions,
+                //     updatedAt: new Date()
+                // });
 
+                alert('Assessment saved successfully!');
+                window.location.href = './index.html';
             } catch (error) {
-                console.error('Error saving quiz:', error);
-                alert('Failed to save quiz. Please try again.');
+                console.error('Error saving assessment:', error);
+                alert('Error saving assessment: ' + error.message);
             }
         });
-
-
-
     </script>
 
 

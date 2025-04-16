@@ -15,7 +15,7 @@
 <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
 
 <style>
-    .features a:not(#past-questions) {
+    .features a:not(#past-questions , #random-assesment) {
         display: none;
     }
 
@@ -86,7 +86,7 @@
                 <div class="feature-card">
                     <img src="./assets/images/1106.jpg" alt="">
                     <h3>Create Aseesments</h3>
-                    <p>Make comprehensive assesments for your students</p>
+                    <p>Make comprehensive brain racking assesments for your students</p>
                 </div>
             </a>
             <a href="/teacher/" id="manage-assesment" >
@@ -168,14 +168,14 @@
                 createAssesment.style.display = "none";
                 manageAssesment.style.display = "none";
                 takeAssesment.style.display = "block";
-                randomAssesment.style.display = "block";
+                
 
             }
             else if (userData.role === "teacher") {
                 createAssesment.style.display = "block";
                 manageAssesment.style.display = "block";
                 takeAssesment.style.display = "none";
-                randomAssesment.style.display = "none";
+            
             }
             else {
                 console.warn("user is not logged in")
