@@ -7,30 +7,30 @@
     <title>Dashboard</title>
     <script type="module" src="../assets/js/index.js" async defer></script>
     <link rel="stylesheet" href="../assets/styles/base.css">
+    <link rel="stylesheet" href="../assets/styles/create_update.css">
     <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
-</head>
 
+</head>
 <body>
     <nav-bar></nav-bar>
-    <div>
-        <label for="title">Quiz Title</label>
-        <input type="text" id="title" required />
+    <div class="heading">
+        <div>
+            <label for="title">Quiz Title</label>
+            <input type="text" id="title" required />
+        </div>
+        <div>
+            <label for="description">Description (optional)</label>
+            <textarea id="description" rows="3"></textarea>
+        </div>
+        <div>
+            <label for="duration">Duration(min)</label>
+            <input type="number" id="duration" required />
+        </div>
+    
     </div>
-    <div>
-        <label for="description">Description (optional)</label>
-        <textarea id="description" rows="3"></textarea>
+    <div class="question-form">
+        <question-form></question-form>
     </div>
-    <div>
-        <label for="duration">Duration</label>
-        <input type="number" id="duration" required />
-    </div>
-    <div>
-        <label for="assessment-image">Assessment Image (Optional)</label>
-        <button id="assessmentUploadWidget" class="cloudinary-button">Upload Image</button>
-        <input type="hidden" id="assessment-image" name="assessment-image">
-        <div id="assessment-image-preview"></div>
-    </div>
-    <question-form></question-form>
     <question-list></question-list>
 
     <button id="saveQuizBtn">Save Quiz</button>

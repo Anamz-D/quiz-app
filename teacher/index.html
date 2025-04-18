@@ -51,7 +51,6 @@
 
             container.innerHTML = quizzes.map(q => `
                 <div class="quiz-card">
-                ${q.imageUrl ? ` <div class="assessment-image"><img src="${q.imageUrl}" alt="${q.title}"> </div>` : ''}   
                 <h3>${q.title}</h3>
                 <p>${q.description}</p>
                 <div class="card-actions">

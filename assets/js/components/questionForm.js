@@ -220,11 +220,12 @@ class QuestionForm extends HTMLElement {
           display: flex;
           flex-direction: column;
           gap: 1rem;
-          padding: 1rem;
+          padding: 3rem;
           border: 1px solid #ddd;
           border-radius: 6px;
           background: #fff;
-          max-width: 500px;
+        
+          
         }
 
         .option-row {
