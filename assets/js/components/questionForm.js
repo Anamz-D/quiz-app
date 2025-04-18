@@ -1,9 +1,12 @@
+import { cloudName, uploadPreset } from "../cloudinary.js";
+
 class QuestionForm extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this.editingQuestion = null;
     this.shadowRoot.innerHTML = this.template();
+    this.questionImages = [];
   }
 
   connectedCallback() {
@@ -13,18 +16,36 @@ class QuestionForm extends HTMLElement {
     this.shadowRoot
       .querySelector("#cancelBtn")
       .addEventListener("click", this.cancelEdit.bind(this));
+    this.setupUploadButtons();
+    this.setupQuestionImageUpload();
   }
 
   set question(q) {
     this.editingQuestion = q;
+    this.questionImages = q.questionImages || [];
 
     const form = this.shadowRoot.querySelector("form");
     form.querySelector("#questionText").value = q.questionText;
-    form.querySelector("#difficulty").value = q.difficulty;
+
+    const previews = this.shadowRoot.querySelectorAll(".preview");
+
+    // Set the question images
+    this.renderQuestionImages();
+
 
     const optionInputs = form.querySelectorAll(".option-text");
     q.options.forEach((opt, i) => {
       if (optionInputs[i]) optionInputs[i].value = opt;
+
+      // Check if the value is an image URL
+      if (opt.startsWith("http")) {
+        previews[i].src = opt;
+        previews[i].style.display = "inline-block";
+      } else {
+        console.log("Not an image URL:", opt);
+        previews[i].style.display = "none";
+        previews[i].src = "";
+      }
     });
 
     const radios = form.querySelectorAll('input[name="correctAnswer"]');
@@ -54,11 +75,89 @@ class QuestionForm extends HTMLElement {
 
   cancelEdit() {
     const form = this.shadowRoot.querySelector("form");
-    form.reset();
-    this.editingQuestion = null;
+    this.reset();
     this.updateEditUI();
   }
 
+  setupUploadButtons() {
+    const buttons = this.shadowRoot.querySelectorAll(".upload-btn:not(#questionImageUploadBtn)");
+    const inputs = this.shadowRoot.querySelectorAll(".option-text");
+    const previews = this.shadowRoot.querySelectorAll(".preview");
+
+    let currentIndex = null;
+
+    // Create the widget
+    const widget = cloudinary.createUploadWidget(
+      {
+        cloudName: cloudName,
+        uploadPreset: uploadPreset,
+        sources: ["local", "url", "camera"],
+        multiple: false,
+      },
+      (error, result) => {
+        if (!error && result.event === "success" && currentIndex !== null) {
+          const url = result.info.secure_url;
+
+          inputs[currentIndex].value = url;
+          previews[currentIndex].src = url;
+          previews[currentIndex].style.display = "inline-block";
+        }
+      }
+    );
+
+    // Attach click listeners to each button
+    buttons.forEach((btn, i) => {
+      btn.addEventListener("click", () => {
+        currentIndex = i;
+        widget.open();
+      });
+    });
+  }
+  setupQuestionImageUpload() {
+    const uploadBtn = this.shadowRoot.querySelector("#questionImageUploadBtn");
+  
+    const widget = cloudinary.createUploadWidget(
+      {
+        cloudName: cloudName,
+        uploadPreset: uploadPreset,
+        sources: ["local", "url", "camera"],
+        multiple: false,
+      },
+      (error, result) => {
+        if (!error && result.event === "success") {
+          const url = result.info.secure_url;
+          this.questionImages.push(url);
+          this.renderQuestionImages();
+        }
+      }
+    );
+  
+    uploadBtn.addEventListener("click", () => {
+      widget.open();
+    });
+  }
+  
+  renderQuestionImages() {
+    const container = this.shadowRoot.querySelector("#questionImageContainer");
+    container.innerHTML = "";
+    this.questionImages.forEach((url, i) => {
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = `
+        <img src="${url}" class="big-img" />
+        <span class="remove" data-index="${i}">✖</span>
+      `;
+      container.appendChild(wrapper);
+    });
+  
+    container.querySelectorAll(".remove").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const index = parseInt(e.target.dataset.index);
+        this.questionImages.splice(index, 1);
+        this.renderQuestionImages();
+      });
+    });
+  }
+  
   handleSubmit(e) {
     e.preventDefault();
 
@@ -71,6 +170,7 @@ class QuestionForm extends HTMLElement {
       ...form.querySelectorAll('input[name="correctAnswer"]'),
     ].findIndex((radio) => radio.checked);
 
+
     // Validation
     if (!questionText || correctIndex === -1) {
       alert("Please fill all fields and select the correct answer.");
@@ -79,27 +179,38 @@ class QuestionForm extends HTMLElement {
 
     const data = {
       id: this.editingQuestion?.id || crypto.randomUUID(),
+      questionImages: this.questionImages,
       questionText,
       options,
       correctAnswer: correctIndex,
-      difficulty: form.querySelector("#difficulty").value,
     };
 
     this.dispatchEvent(
-      new CustomEvent(
-        "question-submit",
-        { detail: data, bubbles: true, composed: true }
-      )
+      new CustomEvent("question-submit", {
+        detail: data,
+        bubbles: true,
+        composed: true,
+      })
     );
 
-    form.reset();
+    this.reset();
     this.editingQuestion = null;
     this.updateEditUI();
   }
 
-  reset(){
+  reset() {
     const form = this.shadowRoot.querySelector("form");
     form.reset();
+    this.editingQuestion = null;
+
+    const previews = form.querySelectorAll(".preview");
+    previews.forEach((img) => {
+      img.src = "";
+      img.style.display = "none";
+    });
+    this.questionImages = [];
+    this.renderQuestionImages();    
+    this.updateEditUI();
   }
 
   template() {
@@ -163,6 +274,43 @@ class QuestionForm extends HTMLElement {
           color: #333;
           display: none;
         }
+
+        .preview {
+          max-height: 30px;
+          margin-left: 0.5rem;
+          vertical-align: middle;
+          display: none;
+        }
+        .upload-btn {
+          background: #eee;
+          padding: 0.2rem 0.5rem;
+          font-size: 0.8rem;
+          cursor: pointer;
+        }
+
+        .image-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          margin-top: 0.5rem;
+        }
+        .image-container img {
+          max-height: 40px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+        .image-container .remove {
+          cursor: pointer;
+          font-size: 0.8rem;
+          color: red;
+        }
+        img .big-img {
+          height: 100px;
+          width: 100px;
+          border-radius: 4px;
+        }
+
+
       </style>
 
       <form>
@@ -170,36 +318,41 @@ class QuestionForm extends HTMLElement {
         
         <div>
           <label for="questionText">Question</label>
-          <textarea id="questionText" required> What? </textarea>
+          <textarea id="questionText" required></textarea>
         </div>
-
+      
+        <div>
+          <label>Attach Images (Optional)</label>
+          <div id="questionImageContainer" class="image-container"></div>
+          <button type="button" id="questionImageUploadBtn" class="upload-btn">Upload Image 📷</button>
+        </div>
+      
         <div>
           <label>Options</label>
           <div class="option-row">
             <input type="radio" name="correctAnswer" value="0" required checked>
             <input type="text" class="option-text" placeholder="Option 1" value="A" required>
+            <button type="button" class="upload-btn">📷</button>
+            <img class="preview" style="max-height: 30px; max-width:40px; display: none;" />
           </div>
           <div class="option-row">
             <input type="radio" name="correctAnswer" value="1" required>
             <input type="text" class="option-text" placeholder="Option 2" value="B" required>
+            <button type="button" class="upload-btn">📷</button>
+            <img class="preview" style="max-height: 30px; max-width:40px; display: none;" />
           </div>
           <div class="option-row">
             <input type="radio" name="correctAnswer" value="2" required>
             <input type="text" class="option-text" placeholder="Option 3">
+            <button type="button" class="upload-btn">📷</button>
+            <img class="preview" style="max-height: 30px; max-width:40px; display: none;" />
           </div>
           <div class="option-row">
             <input type="radio" name="correctAnswer" value="3" required>
             <input type="text" class="option-text" placeholder="Option 4">
+            <button type="button" class="upload-btn">📷</button>
+            <img class="preview" style="max-height: 30px; max-width:40px; display: none;" />
           </div>
-        </div>
-
-        <div>
-          <label for="difficulty">Difficulty</label>
-          <select id="difficulty" required>
-            <option value="easy">Easy</option>
-            <option value="medium" selected>Medium</option>
-            <option value="hard">Hard</option>
-          </select>
         </div>
 
         <div class="btn-group">

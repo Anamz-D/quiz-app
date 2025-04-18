@@ -12,7 +12,7 @@ class QuestionList extends HTMLElement {
   }
 
   template() {
-    return /* html */`
+    return /* html */ `
         <style>
           .list {
             margin-top: 1rem;
@@ -97,9 +97,6 @@ class QuestionList extends HTMLElement {
       card.innerHTML = /* html */ `
           <div class="question-title">${i + 1}. ${q.questionText}</div>
           ${optionsHtml}
-          <small>Category: ${q.category || "N/A"}, Difficulty: ${
-        q.difficulty
-      }</small>
           <div class="actions">
             <button class="edit-btn" data-id="${q.id}">Edit</button>
             <button class="delete-btn" data-id="${q.id}">Delete</button>

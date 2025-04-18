@@ -17,6 +17,10 @@
         <input type="text" id="title" required />
     </div>
     <div>
+        <label for="duration"> Duration </label>
+        <input type="number" id="duration" required />
+    </div>
+    <div>
         <label for="description">Description (optional)</label>
         <textarea id="description" rows="3"></textarea>
     </div>
@@ -42,8 +46,8 @@
 
         // Initialize Cloudinary widget for assessment image
         const assessmentWidget = cloudinary.createUploadWidget({
-            cloudName: dkf6wuffq,
-            uploadPreset: encore,
+            cloudName: cloudName,
+            uploadPreset: uploadPreset,
             folder: 'assessment-images',
             multiple: false,
             resourceType: 'image',
@@ -63,9 +67,7 @@
             assessmentWidget.open();
         });
 
-
-
-        let quizData = { title: '', description: '',  imageUrl: '', questions: [] };
+        let quizData = { title: '', description: '', duration:'', imageUrl: '', questions: [], questionImages: [] };
         const questionForm = document.querySelector('question-form');
         const questionList = document.querySelector('question-list');
 
@@ -94,6 +96,7 @@
                 // Set form fields
                 document.getElementById('title').value = quizData.title;
                 document.getElementById('description').value = quizData.description;
+                document.getElementById('duration').value = quizData.duration;
 
                 // Set questions in the question-list component
                 const questionList = document.querySelector('question-list');
@@ -124,7 +127,7 @@
 
 
         // event listeners for title and description
-        ['title', 'description'].forEach(id => {
+        ['title', 'description', 'duration'].forEach(id => {
             const input = document.getElementById(id);
             input.addEventListener('blur', () => {
                 quizData[id] = input.value;
@@ -169,14 +172,16 @@
                 await updateDoc(quizRef, {
                     title: quizData.title,
                     description: quizData.description,
+                    duration: quizData.duration,
                     imageUrl: quizData.imageUrl,
                     questions: quizData.questions,
-                    createdAt: new Date()
+                    updatedAt: new Date()
                 });
                 
 
                 quizData.title = '';
                 quizData.description = '';
+                quizData.duration = '';
                 quizData.imageUrl = '';
                 quizData.questions = [];
                 questionList.data = [];

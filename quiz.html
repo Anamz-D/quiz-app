@@ -168,6 +168,28 @@
             margin-bottom: 1rem;
         }
 
+        .option-img {
+            max-width: 500px;
+            max-height: 300px;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .image-wrapper {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .question-img {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 6px;
+            object-fit: contain;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
         @media (max-width: 640px) {
             .quiz-container {
                 padding: 1.5rem;
@@ -211,6 +233,7 @@
             </div>
 
             <div class="question" id="question"></div>
+            <div id="image-container" class="image-wrapper"></div>
             <div class="options" id="options"></div>
             <button class="button" id="submit-btn" disabled>Submit Answer</button>
 
@@ -225,7 +248,7 @@
         let currentQuestion = 0;
         let score = 0;
         let selectedAnswer = null;
-        let remainingTime = 210; // 3.5 minutes
+        let remainingTime = 0 ; //in seconds
         let quizData = [];
         let correctShuffledIndex = null;
 
@@ -299,10 +322,17 @@
 
             const params = new URLSearchParams(window.location.search);
             const quizId = params.get("id");
-            if (quizId) { 
-                quizData = await getFirebaseQuizById(quizId);
-                if (quizData) {
-                    quizData = quizData.questions;
+            if (quizId) {
+                const quiz = await getFirebaseQuizById(quizId);
+                if (quiz) {
+
+
+                    const defaultDurationMinutes = 3.5;
+                    const minutes = Number(quiz.duration);
+                    remainingTime = (isNaN(minutes) || minutes <= 0 ? defaultDurationMinutes : minutes) * 60;
+
+
+                    quizData = quiz.questions;
                 }
             }
 
@@ -324,6 +354,17 @@
             document.getElementById("current-question").textContent = `Question ${currentQuestion + 1} / ${quizData.length}`;
             questionEl.innerText = decodeQuestion(current.questionText);
 
+            const imageContainer = document.getElementById('image-container');
+
+            (current.questionImages || []).forEach((imgUrl) => {
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                img.alt = 'Question image';
+                img.classList.add('question-img');
+                imageContainer.appendChild(img);
+            });
+
+
             // Step 1: Filter + Pair options with original index
             const availableOptions = current.options
                 .map((option, index) => ({ option, index }))
@@ -332,12 +373,17 @@
             // Step 3: Shuffle the options
             const shuffledOptions = shuffle(availableOptions);
 
-            optionsEl.innerHTML = shuffledOptions.map(({ option }, i) => `
-                <div class="option">
+            optionsEl.innerHTML = shuffledOptions.map(({ option }, i) => {
+                const isImage = option.startsWith("http");
+                return `
+                    <div class="option">
                     <input type="radio" name="quiz" id="option${i}" value="${i}">
-                    <label for="option${i}">${option}</label>
-                </div>
-                `).join('');
+                    <label for="option${i}">
+                        ${isImage ? `<img src="${option}" alt="Option ${i + 1}" class="option-img">` : option}
+                    </label>
+                    </div>
+                `;
+            }).join('');
 
             correctShuffledIndex = shuffledOptions.findIndex(opt => opt.index === current.correctAnswer);
 

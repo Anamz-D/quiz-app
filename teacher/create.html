@@ -21,6 +21,10 @@
         <textarea id="description" rows="3"></textarea>
     </div>
     <div>
+        <label for="duration">Duration</label>
+        <input type="number" id="duration" required />
+    </div>
+    <div>
         <label for="assessment-image">Assessment Image (Optional)</label>
         <button id="assessmentUploadWidget" class="cloudinary-button">Upload Image</button>
         <input type="hidden" id="assessment-image" name="assessment-image">
@@ -36,14 +40,25 @@
         import { collection, addDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { db } from '../assets/js/firebase.js';
         import { isTeacher } from '../assets/js/index.js';
-        // Cloudinary configuration
-        const cloudName = 'dkf6wuffq';
-        const uploadPreset = 'encore';
+        import { cloudName, uploadPreset } from '../assets/js/cloudinary.js'; 
 
-        // Initialize Cloudinary widget for assessment image
+
+        // Check if the user is a teacher
+        window.addEventListener('DOMContentLoaded', async () => {
+            await isTeacher();
+        });
+
+
+        const quizData = { title: '', description: '', duration: '', questions: [], questionImages: [] };
+        const questionForm = document.querySelector('question-form');
+        const questionList = document.querySelector('question-list');
+
+        let editingQuestionId = null;
+
+        // Cloudinary configuration
         const assessmentWidget = cloudinary.createUploadWidget({
-            cloudName: dkf6wuffq,
-            uploadPreset: encore,
+            cloudName: cloudName,
+            uploadPreset: uploadPreset,
             folder: 'assessment-images',
             multiple: false,
             resourceType: 'image',
@@ -63,18 +78,8 @@
             assessmentWidget.open();
         });
 
-        // Check if the user is a teacher
-        window.addEventListener('DOMContentLoaded', async () => {
-            await isTeacher();
-        });
-        const quizData = { title: '', description: '',imageUrl: '', questions: [] };
-        const questionForm = document.querySelector('question-form');
-        const questionList = document.querySelector('question-list');
-
-        let editingQuestionId = null;
-
-        // event listeners for title and description
-        ['title', 'description'].forEach(id => {
+        // event listeners for title, duration and description
+        ['title', 'description', 'duration'].forEach(id => {
             const input = document.getElementById(id);
             input.addEventListener('blur', () => {
                 quizData[id] = input.value;
@@ -83,7 +88,6 @@
 
         document.addEventListener('question-submit', (e) => {
             const newQuestion = e.detail;
-
             if (editingQuestionId) {
                 const index = quizData.questions.findIndex(q => q.id === editingQuestionId);
                 quizData.questions[index] = newQuestion;
@@ -107,83 +111,41 @@
             questionList.data = quizData.questions;
         });
 
-        // // Save quiz data to Firestore
-        // document.getElementById('saveQuizBtn').addEventListener('click', async () => {
-        //     quizData.imageUrl = document.getElementById('assessment-image').value;
-        //     if (!quizData.title || quizData.questions.length === 0) {
-        //         alert('Please provide a title, description, and at least one question.');
-        //         return;
-        //     }
-
-        //     try {
-        //         const docRef = await addDoc(collection(db, 'assessments'), {
-        //             title: quizData.title,
-        //             description: quizData.description,
-        //             imageUrl: quizData.imageUrl,
-        //             questions: quizData.questions,
-        //             createdAt: new Date()
-        //         });
-
-        //         alert('Quiz saved successfully! ID: ' + docRef.id);
-        //         // Reset if you want
-        //         quizData.title = '';
-        //         quizData.description = '';
-        //         quizData.imageUrl = '';
-        //         quizData.questions = [];
-        //         questionList.data = [];
-        //         questionForm.reset(); // Add a reset() method to your component if needed
-        //         document.getElementById('assessment-image-preview').innerHTML = '';
-
-        //     } catch (error) {
-        //         console.error('Error saving quiz:', error);
-        //         alert('Failed to save quiz. Please try again.');
-        //     }
-        // });
-
-        
-
-        // Update save handler
+        // Save quiz data to Firestore
         document.getElementById('saveQuizBtn').addEventListener('click', async () => {
-            // Capture image URL
             quizData.imageUrl = document.getElementById('assessment-image').value;
-            
-            // Update validation
-            if (!quizData.title.trim()) {
-                alert('Please provide a title');
-                return;
-            }
-            
-            if (quizData.questions.length === 0) {
-                alert('Please add at least one question');
+            if (!quizData.title || quizData.questions.length === 0) {
+                alert('Please provide a title, description, and at least one question.');
                 return;
             }
 
             try {
-                // For create.html
                 const docRef = await addDoc(collection(db, 'assessments'), {
                     title: quizData.title,
                     description: quizData.description,
+                    duration: quizData.duration,
                     imageUrl: quizData.imageUrl,
                     questions: quizData.questions,
                     createdAt: new Date()
                 });
 
-                // For update.html
-                // await updateDoc(quizRef, {
-                //     title: quizData.title,
-                //     description: quizData.description,
-                //     imageUrl: quizData.imageUrl,
-                //     questions: quizData.questions,
-                //     updatedAt: new Date()
-                // });
+                alert('Quiz saved successfully! ID: ' + docRef.id);
+                // Reset if you want
+                quizData.title = '';
+                quizData.description = '';
+                quizData.duration = '';
+                quizData.imageUrl = '';
+                quizData.questions = [];
+                questionList.data = [];
+                questionForm.reset(); 
+                document.getElementById('assessment-image-preview').innerHTML = '';
 
-                alert('Assessment saved successfully!');
-                window.location.href = './index.html';
             } catch (error) {
-                console.error('Error saving assessment:', error);
-                alert('Error saving assessment: ' + error.message);
+                console.error('Error saving quiz:', error);
+                alert('Failed to save quiz. Please try again.');
             }
         });
+
     </script>
 
 
