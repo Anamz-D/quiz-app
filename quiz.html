@@ -69,6 +69,19 @@
             -webkit-text-fill-color: transparent;
             margin: 0;
         }
+        
+        /* Profile info styles */
+        .profile-info {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .profile-info label {
+            font-weight: bold;
+            margin-right: 10px;
+
+        }
 
         .quiz-info {
             display: flex;
@@ -219,7 +232,10 @@
         </div>
 
         <div class="quiz-header">
-            <h1 class="quiz-title">Quiz Time!</h1>
+            <h1 class="quiz-title">Assesment Time!</h1>
+        </div>
+        <div class="card-body" id="profileInfo" style="margin-top: 30px;margin-bottom: 30px;">
+            <!-- Profile info will be inserted here by JavaScript -->
         </div>
 
         <section id="quiz-content">
@@ -241,8 +257,10 @@
     </main>
 
     <script type="module">
-        import { collection, addDoc, getDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { db } from './assets/js/firebase.js';
+        import { collection, addDoc, getDoc, getDocs, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { db , auth } from './assets/js/firebase.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
+
 
         // Global variables 
         let currentQuestion = 0;
@@ -251,8 +269,11 @@
         let remainingTime = 0 ; //in seconds
         let quizData = [];
         let correctShuffledIndex = null;
+        let userData = null;
+        let currentUser = null;
 
         // DOM elements
+        const profileInfo = document.getElementById('profileInfo');
         const questionEl = document.getElementById('question');
         const optionsEl = document.getElementById('options');
         const submitBtn = document.getElementById('submit-btn');
@@ -263,6 +284,46 @@
 
         // Event listeners
         submitBtn.addEventListener('click', handleSubmit);
+
+        function displayUserData(data) {
+
+            const profileHTML = `
+
+            <div class="profile-info">
+                <label>Full Name:</label>
+                <span>${data.fullName || 'Not set'}</span>
+            </div>
+            <div class="profile-info">
+                <label>Department:</label>
+                <span>${data.department || 'Not set'}</span>
+            </div>
+            <div class="profile-info">
+                <label>Matric Number:</label>
+                <span>${data.matricNumber || 'Not set'}</span>
+            </div>
+
+            `;
+
+            profileInfo.innerHTML = profileHTML;
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                try {
+                    const docRef = doc(db, "users", user.uid);
+                    const docSnap = await getDoc(docRef);
+
+                    if (docSnap.exists()) {
+                        userData = docSnap.data();
+                        displayUserData(userData);
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                }
+            } 
+        });
+
 
         /// Helper functions
 
