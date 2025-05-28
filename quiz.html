@@ -69,7 +69,7 @@
             -webkit-text-fill-color: transparent;
             margin: 0;
         }
-        
+
         /* Profile info styles */
         .profile-info {
             margin-bottom: 15px;
@@ -257,8 +257,8 @@
     </main>
 
     <script type="module">
-        import { collection, addDoc, getDoc, getDocs, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { db , auth } from './assets/js/firebase.js';
+        import { collection, addDoc, getDoc, getDocs, doc , serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { db, auth } from './assets/js/firebase.js';
         import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
 
 
@@ -266,7 +266,7 @@
         let currentQuestion = 0;
         let score = 0;
         let selectedAnswer = null;
-        let remainingTime = 0 ; //in seconds
+        let remainingTime = 0; //in seconds
         let quizData = [];
         let correctShuffledIndex = null;
         let userData = null;
@@ -321,7 +321,7 @@
                 } catch (error) {
                     console.error("Error fetching user data:", error);
                 }
-            } 
+            }
         });
 
 
@@ -467,6 +467,9 @@
         // Show final results
         function showResults() {
             const percentage = (score / quizData.length) * 100;
+            // Save score data
+            saveScoreData(score, quizData.length);
+
             quizContent.innerHTML = `
                 <div class="result">
                     <div class="score">Score: ${score}/${quizData.length}</div>
@@ -477,6 +480,26 @@
             `;
             progressEl.style.width = '100%';
         }
+
+        // Add new score saving function
+        async function saveScoreData(score, totalQuestions) {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const assessmentId = params.get("id");
+
+                await addDoc(collection(db, "scores"), {
+                    matricNumber: userData.matricNumber,
+                    score: score,
+                    total: totalQuestions,
+                    assessmentId: assessmentId,
+                    takenOn: serverTimestamp(),
+                    userId: currentUser.uid
+                });
+            } catch (error) {
+                console.error("Error saving score:", error);
+            }
+        }
+
 
         // Handle answer submission
         function handleSubmit() {

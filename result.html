@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encore-Education</title>
+    <script type="module" src="./assets/js/index.js" async></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f3f4f6;
+
+            /* background-image: url(photo_2024-10-20_16-03-38.jpg); */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            overflow-x: hidden;
+            /* background-image: url(photo_2024-10-20_16-05-31.jpg); */
+        }
+
+        .features {
+            display: grid;
+            justify-content: space-evenly;
+            /* grid-template-columns: 1fr; */
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+
+            gap: 1rem;
+            margin-bottom: 3rem;
+            padding: 7px;
+        }
+
+        .feature-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            background-color: hsl(233, 26%, 24%);
+            color: white;
+            /* transform: skewY(0.75deg); */
+            /* transform: translate(1rem, 1rem); */
+            /* transform: scale(1.06); */
+            transform: translateY(-8px);
+            transition: transform 0.7s, box-shadow 0.3s;
+
+
+        }
+
+        .features a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .feature-card img {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .results-table {
+            margin: 2rem auto;
+            max-width: 800px;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #scoresTable {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        #scoresTable th {
+            background: #1e3a8a;
+            color: white;
+            padding: 12px;
+        }
+
+        #scoresTable td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <header>
+            <nav-bar></nav-bar>
+        </header>
+
+        <div class="results-table">
+            <h2>Student Scores</h2>
+            <table id="scoresTable">
+                <thead>
+                    <tr>
+                        <th>Matric Number</th>
+                        <th>Score</th>
+                        <th>Date Taken</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </main>
+
+
+    <script type="module">
+        import { collection, getDocs, query, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { isTeacher } from "../assets/js/index.js";
+        import { db, auth } from "../assets/js/firebase.js";
+
+
+        async function loadScores() {
+            const tableBody = document.querySelector("#scoresTable tbody");
+            tableBody.innerHTML = "<tr><td colspan='3'>Loading...</td></tr>";
+
+            try {
+                const q = query(collection(db, "scores"));
+                const querySnapshot = await getDocs(q);
+
+                tableBody.innerHTML = "";
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const row = `
+                    <tr>
+                    <td>${data.matricNumber}</td>
+                    <td>${data.score}/${data.total}</td>
+                    <td>${new Date(data.takenOn?.seconds * 1000).toLocaleDateString()}</td>
+                    </tr>
+                `;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("Error loading scores:", error);
+                tableBody.innerHTML = "<tr><td colspan='3'>Error loading results</td></tr>";
+            }
+        }
+
+        // Update DOMContentLoaded listener
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await isTeacher();
+                loadScores();
+            } catch (err) {
+                window.location.href = '/';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -7,8 +7,8 @@
     <title>Online Assesment System</title>
     <link rel="shortcut icon" href="./assets/images/1106.jpg" type="image/x-icon">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="./assets/styles/base.css">
-    <script type="module" src="./assets/js/index.js" async></script>
+    <link rel="stylesheet" href="../assets/styles/base.css">
+    <script type="module" src="../assets/js/index.js" async></script>
 
 </head>
 
@@ -82,32 +82,39 @@
                     <p>Access a wide range of past questions to practice and improve your skills</p>
                 </div>
             </a>
-            <a href="/teacher/create.html" id="create-assesment">
+            <a href="../teacher/create.html" id="create-assesment">
                 <div class="feature-card">
                     <img src="./assets/images/1106.jpg" alt="">
                     <h3>Create Aseesments</h3>
                     <p>Make comprehensive brain racking assesments for your students</p>
                 </div>
             </a>
-            <a href="/teacher/" id="manage-assesment" >
+            <a href="../teacher/" id="manage-assesment" >
                 <div class="feature-card">
                     <img src="./assets/images/monitoring.png" alt="Track Progress" >
                     <h3>Manange assessments</h3>
                     <p> edit and delete assesments from the database at your pleasure </p>
                 </div>
             </a>   
-            <a href="assesment.html" id="take-assesment" target="_blank" >
+            <a href="../assesment.html" id="take-assesment" target="_blank" >
                 <div class="feature-card">
                     <img src="./assets/images/monitoring.png" alt="Track Progress" >
                     <h3>Take assessments</h3>
                     <p>Challenge yourself with assessments made by your tutors</p>
                 </div>
             </a>   
-            <a href="random_assesment.html" id="random-assesment" >
+            <a href="../random_assesment.html" id="random-assesment" >
                 <div class="feature-card">
                     <img src="./assets/images/monitoring.png" alt="Track Progress" >
                     <h3>Take random assessments</h3>
                     <p>Challenge yourself with assessments to gauge your knowledge</p>
+                </div>
+            </a>   
+             <a href="../result.html" id="check-results" target="_blank" >
+                <div class="feature-card">
+                    <img src="./assets/images/monitoring.png" alt="Track Progress" >
+                    <h3>see student scores </h3>
+                    <p>Retrieve all scores gotten from assesments that have been taken</p>
                 </div>
             </a>   
         </main>
@@ -157,7 +164,7 @@
             const manageAssesment = document.getElementById("manage-assesment");
             const takeAssesment = document.getElementById("take-assesment");
             const randomAssesment = document.getElementById("random-assesment");
-
+            const checkResults = document.getElementById("check-results");
 
             
            
@@ -175,6 +182,7 @@
                 createAssesment.style.display = "block";
                 manageAssesment.style.display = "block";
                 takeAssesment.style.display = "none";
+                checkResults.style.display = "block";
             
             }
             else {

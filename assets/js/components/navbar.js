@@ -102,11 +102,11 @@ button.menu-toggle {
     </button>
     <div class="nav-links">
         <a href="/">Home</a>
-        <a href="/assesment.html">Assessments</a>
-        <a href="/profilepage.html">Dashboard</a>
-        <a href="/sign_up.html" id="sign-up" >Sign up</a>
-        <a href="/teacher" id="teacher-link" >Teacher Dash</a>
-        <a href="/log_in.html" id="log-in">Login</a>
+        <a href="../assesment.html">Assessments</a>
+        <a href="../profilepage.html">Dashboard</a>
+        <a href="../sign_up.html" id="sign-up" >Sign up</a>
+        <a href="../teacher" id="teacher-link" >Teacher Dash</a>
+        <a href="../log_in.html" id="log-in">Login</a>
         <button id="logout-btn"> Logout </button>
     </div> 
         
