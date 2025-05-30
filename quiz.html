@@ -257,7 +257,7 @@
     </main>
 
     <script type="module">
-        import { collection, addDoc, getDoc, getDocs, doc , serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { collection, addDoc, getDoc, getDocs, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { db, auth } from './assets/js/firebase.js';
         import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js';
 
@@ -474,7 +474,7 @@
                 <div class="result">
                     <div class="score">Score: ${score}/${quizData.length}</div>
                     <p>You got ${percentage.toFixed(2)}% of the questions correct!</p>
-                    <button class="button" onclick="location.reload()">Restart Quiz</button>
+                    <button class="button" onclick="location.reload()">Restart Assesment</button>
                     <button class="button" style="margin-top:10px;" onclick="location.href='/assesment.html'"> Go home </button>
                 </div>
             `;
@@ -486,15 +486,22 @@
             try {
                 const params = new URLSearchParams(window.location.search);
                 const assessmentId = params.get("id");
+                // Get assessment details to store title
+                const assessmentRef = doc(db, "assessments", assessmentId);
+                const assessmentSnap = await getDoc(assessmentRef);
+                const assessmentData = assessmentSnap.data();
 
                 await addDoc(collection(db, "scores"), {
                     matricNumber: userData.matricNumber,
                     score: score,
                     total: totalQuestions,
                     assessmentId: assessmentId,
+                    assessmentTitle: assessmentData.title, // Store title
                     takenOn: serverTimestamp(),
-                    userId: currentUser.uid
+                    // userId: currentUser.uid    
+                    userId: auth.currentUser.uid
                 });
+                console.log("Score saved successfully");
             } catch (error) {
                 console.error("Error saving score:", error);
             }

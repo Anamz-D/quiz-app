@@ -67,6 +67,18 @@ class QuestionList extends HTMLElement {
             color: white;
             border-radius: 4px;
           }
+          .question-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0;
+          }
+
+          .question-images img {
+            max-height: 50px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+          }
         </style>
         <div class="list" id="questionList"></div>
       `;
@@ -85,6 +97,16 @@ class QuestionList extends HTMLElement {
       const card = document.createElement("div");
       card.className = "question-card";
 
+      // Add question images
+      let imagesHtml = '';
+      if (q.questionImages && q.questionImages.length > 0) {
+        imagesHtml = `<div class="question-images">
+          ${q.questionImages.map(img => 
+            `<img src="${img}" style="max-height: 50px; margin-right: 5px;">`
+          ).join('')}
+        </div>`;
+      }
+
       const optionsHtml = q.options
         .map((opt, idx) => {
           const isCorrect = idx === q.correctAnswer;
@@ -96,6 +118,7 @@ class QuestionList extends HTMLElement {
 
       card.innerHTML = /* html */ `
           <div class="question-title">${i + 1}. ${q.questionText}</div>
+          ${imagesHtml}
           ${optionsHtml}
           <div class="actions">
             <button class="edit-btn" data-id="${q.id}">Edit</button>

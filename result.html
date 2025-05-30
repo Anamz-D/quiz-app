@@ -76,7 +76,7 @@
             margin-bottom: 0.5rem;
         }
 
-        .results-table {
+        /* .results-table {
             margin: 2rem auto;
             max-width: 800px;
             background: white;
@@ -99,6 +99,39 @@
         #scoresTable td {
             padding: 10px;
             border-bottom: 1px solid #eee;
+        } */
+        .results-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        #scoresTable {
+            width: 100%;
+            margin-top: 1rem;
+            border-collapse: collapse;
+        }
+
+        #scoresTable th {
+            cursor: pointer;
+            padding: 12px 15px;
+            background: #1e3a8a;
+            color: white;
+            text-align: left;
+        }
+
+        #scoresTable td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -109,7 +142,7 @@
             <nav-bar></nav-bar>
         </header>
 
-        <div class="results-table">
+        <!-- <div class="results-table">
             <h2>Student Scores</h2>
             <table id="scoresTable">
                 <thead>
@@ -121,8 +154,28 @@
                 </thead>
                 <tbody></tbody>
             </table>
+        </div> -->
+        <div class="results-container">
+            <h1>Student Performance</h1>
+            <div class="controls">
+                <input type="text" id="searchMatric" placeholder="Search matric...">
+                <select id="assessmentFilter">
+                    <option value="">All Assessments</option>
+                </select>
+            </div>
+            <table id="scoresTable">
+                <thead>
+                    <tr>
+                        <th data-sort="matric">Matric Number</th>
+                        <th data-sort="score">Score</th>
+                        <th data-sort="date">Date Taken</th>
+                        <th>Assessment</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div class="pagination"></div>
         </div>
-
     </main>
 
 
@@ -149,6 +202,7 @@
                     <td>${data.matricNumber}</td>
                     <td>${data.score}/${data.total}</td>
                     <td>${new Date(data.takenOn?.seconds * 1000).toLocaleDateString()}</td>
+                    <td>${data.assesmentTitle}</td>
                     </tr>
                 `;
                     tableBody.innerHTML += row;

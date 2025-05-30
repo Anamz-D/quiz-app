@@ -157,7 +157,17 @@ class QuestionForm extends HTMLElement {
       });
     });
   }
-  
+  // generateId() {
+  //   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+  //     return crypto.randomUUID();
+  //   }
+  //   // Fallback for browsers without crypto support
+  //   return 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+  // }
+  generateId() {  // Make sure this is defined
+    return 'qid-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+  }
+
   handleSubmit(e) {
     e.preventDefault();
 
@@ -178,13 +188,14 @@ class QuestionForm extends HTMLElement {
     }
 
     const data = {
-      id: this.editingQuestion?.id || crypto.randomUUID(),
+      // id: this.editingQuestion?.id || crypto.randomUUID(),
+      id: this.editingQuestion?.id || this.generateId(),
       questionImages: this.questionImages,
       questionText,
       options,
       correctAnswer: correctIndex,
     };
-
+    
     this.dispatchEvent(
       new CustomEvent("question-submit", {
         detail: data,
