@@ -144,7 +144,8 @@ section {
 
 /* Footer */
 footer {
-    background-color: #1f2937;
+    /* background-color: #1f2937; */
+    background-color: hsl(233, 26%, 24%);
     color: white;
     padding: 0.75rem 0;
     text-align: center;
